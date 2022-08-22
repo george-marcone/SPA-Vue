@@ -5,20 +5,26 @@
     
     <div class="marginPrincipal"></div>
 
-    <alunos/>
+    <!-- <Alunos/> -->
+    <!-- <Professor/> -->
+    <Sobre/>
 
   </div>
 </template>
 
 <script>
 import Alunos from './components/Aluno/Alunos'
+import Professor from './components/Professor/Professor'
+import Sobre from './components/Sobre/Sobre.vue'
 import Nav from './components/_nav/Nav'
 
 export default {
   name: 'app',
   components: {
     Alunos, 
-    Nav
+    Professor,
+    Sobre,
+    Nav    
   }
 }
 </script>
@@ -47,9 +53,7 @@ body, html {
   margin: 0;
   height: 100%;
 }
-#app {
 
-}
 .btn_Danger{
 background-color: #fa4430;
 }

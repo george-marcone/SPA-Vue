@@ -66,13 +66,15 @@ export default {
         sobrenome: ""
       }
 
-      this.$http
-      .post('http://localhost:3000/alunos/', _aluno)
-      .then(res => res.json()) 
-      .then(alunoRetornado => {
-        this.alunos.push(alunoRetornado);
-        this.nome = '';
-      })
+      if(_aluno.nome !== ""){
+        this.$http
+            .post('http://localhost:3000/alunos/', _aluno)
+            .then(res => res.json()) 
+            .then(alunoRetornado => {
+              this.alunos.push(alunoRetornado);
+              this.nome = '';
+            })
+      }      
     },
 
     remover(aluno){
