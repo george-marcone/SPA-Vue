@@ -47,7 +47,7 @@ export default {
       alunos: []
     };
   },
-  
+
   created(){
     this.$http
     .get('http://localhost:3000/alunos/')
@@ -90,6 +90,7 @@ export default {
 
 <style scoped>
   input {    
+    width: calc(100% - 195px);
     border: 0;
     padding: 20px;
     font-size: 1.3em;
@@ -97,7 +98,8 @@ export default {
     display: inline;
   }
 
-.btnInput {  
+.btnInput { 
+  width: 150px; 
   border: 0px;
   padding: 20px;
   font-size: 1.3em;

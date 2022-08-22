@@ -1,22 +1,32 @@
 <template>
   <div id="app">
+    
+    <Nav></Nav>
+    
+    <div class="marginPrincipal"></div>
+
     <alunos/>
+
   </div>
 </template>
 
 <script>
-import Alunos from './components/Aluno/Alunos.vue'
+import Alunos from './components/Aluno/Alunos'
+import Nav from './components/_nav/Nav'
 
 export default {
   name: 'app',
   components: {
-    Alunos
+    Alunos, 
+    Nav
   }
 }
 </script>
 
 <style>
+
 #app {  
+  width: 100%;
 }
 
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
@@ -27,6 +37,12 @@ body{
   display: grid;
   justify-items: center;
 }
+
+.marginPrincipal{
+  width: 50%;
+  margin: auto;
+}
+
 body, html {
   margin: 0;
   height: 100%;
