@@ -1,15 +1,6 @@
 <template>
   <div>
     <titulo texto = "Professores"/>
-    <input
-      type="text"
-      placeholder="Nome do Professor"
-      v-model="nome"
-      v-on:keyup.enter="addAluno()"
-    />
-    <button class="btn btnInput" @click="addAluno()"> Adicionar </button>
-    <br />
-    <br />
     <table>
       <thead>
         <th>Cód.</th>
@@ -18,10 +9,12 @@
       </thead>
       <tbody v-if="professores.length">
         <tr v-for="(professor, index) in professores" :key="index">          
-          <td>{{professor.id}}</td>
-          <td>{{professor.nome}} {{professor.sobrenome}}</td>
-          <td> 3
-            <!-- <button class="btn btn_Danger" @click="remover()">Remover</button> -->
+          <td>{{professor.id}}</td>          
+            <router-link to="/alunos" tag="td" style="cursor:pointer ">
+              {{professor.nome}} {{professor.sobrenome}}
+            </router-link>
+          <td> 
+            3            
           </td>
         </tr>
       </tbody>

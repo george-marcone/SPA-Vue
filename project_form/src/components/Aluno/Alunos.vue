@@ -21,7 +21,7 @@
           <td>{{aluno.id}}</td>
           <td>{{aluno.nome}} {{aluno.sobrenome}}</td>
           <td>
-            <button class="btn btn_Danger" @click="remover()">Remover</button>
+            <button class="btn btn_Danger" @click="remover(aluno)">Remover</button>
           </td>
         </tr>
       </tbody>

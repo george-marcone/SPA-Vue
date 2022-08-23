@@ -3,12 +3,13 @@
     
     <Nav></Nav>
     
-    <div class="marginPrincipal"></div>
-
+    <div class="marginPrincipal">
+      <router-view></router-view>
+    </div>
+    
     <!-- <Alunos/> -->
     <!-- <Professor/> -->
-    <Sobre/>
-
+    <!-- <Sobre/> -->
   </div>
 </template>
 
@@ -47,6 +48,7 @@ body{
 .marginPrincipal{
   width: 50%;
   margin: auto;
+  text-align: center;
 }
 
 body, html {
