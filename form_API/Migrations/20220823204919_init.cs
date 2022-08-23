@@ -14,7 +14,7 @@ namespace form_API.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Nome = table.Column<int>(type: "INTEGER", nullable: false)
+                    Nome = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,6 +42,36 @@ namespace form_API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "Professores",
+                columns: new[] { "Id", "Nome" },
+                values: new object[] { 1, "Vinicius" });
+
+            migrationBuilder.InsertData(
+                table: "Professores",
+                columns: new[] { "Id", "Nome" },
+                values: new object[] { 2, "Paula" });
+
+            migrationBuilder.InsertData(
+                table: "Professores",
+                columns: new[] { "Id", "Nome" },
+                values: new object[] { 3, "Suzana" });
+
+            migrationBuilder.InsertData(
+                table: "Alunos",
+                columns: new[] { "Id", "DataNasc", "Nome", "ProfessorId", "Sobrenome" },
+                values: new object[] { 1, "25/02/1982", "Maria", 1, "Solano" });
+
+            migrationBuilder.InsertData(
+                table: "Alunos",
+                columns: new[] { "Id", "DataNasc", "Nome", "ProfessorId", "Sobrenome" },
+                values: new object[] { 2, "25/01/2000", "Joao", 2, "Gomes" });
+
+            migrationBuilder.InsertData(
+                table: "Alunos",
+                columns: new[] { "Id", "DataNasc", "Nome", "ProfessorId", "Sobrenome" },
+                values: new object[] { 3, "22/02/2002", "Alex", 3, "Alves" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Alunos_ProfessorId",

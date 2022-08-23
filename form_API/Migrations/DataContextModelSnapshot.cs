@@ -42,6 +42,32 @@ namespace form_API.Migrations
                     b.HasIndex("ProfessorId");
 
                     b.ToTable("Alunos");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DataNasc = "25/02/1982",
+                            Nome = "Maria",
+                            ProfessorId = 1,
+                            Sobrenome = "Solano"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DataNasc = "25/01/2000",
+                            Nome = "Joao",
+                            ProfessorId = 2,
+                            Sobrenome = "Gomes"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DataNasc = "22/02/2002",
+                            Nome = "Alex",
+                            ProfessorId = 3,
+                            Sobrenome = "Alves"
+                        });
                 });
 
             modelBuilder.Entity("form_API.Models.Professor", b =>
@@ -50,12 +76,30 @@ namespace form_API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Nome")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.ToTable("Professores");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nome = "Vinicius"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nome = "Paula"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nome = "Suzana"
+                        });
                 });
 
             modelBuilder.Entity("form_API.Models.Aluno", b =>
