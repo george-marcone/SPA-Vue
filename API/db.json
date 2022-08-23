@@ -16,11 +16,12 @@
   "alunos": [
     {
       "id": 2,
-      "nome": "Suzana",
-      "sobrenome": "Lopes",
+      "nome": "SuzanaZZZZ",
+      "sobrenome": "Lopes 8888",
+      "dataNasc": "25/02/1985",
       "professor": {
-        "id": 1,
-        "nome": "Vinicius"
+        "id": 3,
+        "nome": "Regina"
       }
     },
     {

@@ -61,6 +61,13 @@
         </tr>
       </tbody>
     </table>
+
+    <div style="margin-top: 10px">
+      <div v-if="!visualizando">
+        <button class="btn btnSalvar" @click="salvar(aluno)">Salvar</button>
+        <button class="btn btnCancelar" @click="cancelar()">Cancelar</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -103,6 +110,26 @@ export default {
     editar(aluno) {
       this.visualizando = !this.visualizando;
     },
+    salvar(_aluno) {
+      let _alunoEditar = {
+        id: _aluno.id,
+        nome: _aluno.nome,
+        sobrenome: _aluno.sobrenome,
+        dataNasc: _aluno.dataNasc,
+        professor: _aluno.professor,
+      };
+
+      this.$http.put(
+        `http://localhost:3000/alunos/${_alunoEditar.id}`,
+        _alunoEditar
+      );
+
+      this.visualizando = !this.visualizando;
+    },
+
+    cancelar() {
+      this.visualizando = !this.visualizando;
+    },
   },
 };
 </script>
@@ -132,5 +159,15 @@ select {
 .btnEditar {
   float: right;
   background-color: rgb(76, 186, 249);
+}
+
+.btnSalvar {
+  float: right;
+  background-color: rgb(79, 196, 68);
+}
+
+.btnCancelar {
+  float: left;
+  background-color: rgb(249, 186, 92);
 }
 </style>
