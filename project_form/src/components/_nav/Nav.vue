@@ -2,7 +2,7 @@
     <div class="barraTop">
         <nav>
             <router-link to="/professores">Professores</router-link>
-            <router-link to="/alunos">Alunos</router-link>
+            <router-link to="/todosalunos">Alunos</router-link>
             <router-link to="/sobre">Sobre</router-link>
         </nav>
     </div>

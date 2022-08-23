@@ -13,13 +13,12 @@
       "nome": "Regina"
     }
   ],
-
   "alunos": [
     {
       "id": 2,
       "nome": "Suzana",
       "sobrenome": "Lopes",
-      "professor":{
+      "professor": {
         "id": 1,
         "nome": "Vinicius"
       }
@@ -28,7 +27,7 @@
       "nome": "maria",
       "sobrenome": "",
       "id": 3,
-      "professor":{
+      "professor": {
         "id": 2,
         "nome": "June"
       }
@@ -37,7 +36,7 @@
       "nome": "laura",
       "sobrenome": "",
       "id": 5,
-      "professor":{
+      "professor": {
         "id": 1,
         "nome": "Vinicius"
       }
@@ -46,10 +45,55 @@
       "nome": "george marcone",
       "sobrenome": "",
       "id": 6,
-      "professor":{
+      "professor": {
         "id": 3,
         "nome": "Regina"
       }
+    },
+    {
+      "nome": "Sandro",
+      "sobrenome": "",
+      "professor": {
+        "id": 2,
+        "nome": "June"
+      },
+      "id": 7
+    },
+    {
+      "nome": "Lucas",
+      "sobrenome": "",
+      "professor": {
+        "id": 2,
+        "nome": "June"
+      },
+      "id": 8
+    },
+    {
+      "nome": "Paula",
+      "sobrenome": "",
+      "professor": {
+        "id": 3,
+        "nome": "Regina"
+      },
+      "id": 9
+    },
+    {
+      "nome": "Luana",
+      "sobrenome": "",
+      "professor": {
+        "id": 3,
+        "nome": "Regina"
+      },
+      "id": 10
+    },
+    {
+      "nome": "Mércia",
+      "sobrenome": "",
+      "professor": {
+        "id": 1,
+        "nome": "Vinicius"
+      },
+      "id": 11
     }
   ]
 }

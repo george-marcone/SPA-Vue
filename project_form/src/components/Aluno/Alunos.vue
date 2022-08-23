@@ -1,13 +1,17 @@
 <template>
   <div>
-    <titulo texto = "Aluno"/>
-    <input
-      type="text"
-      placeholder="Nome do Aluno"
-      v-model="nome"
-      v-on:keyup.enter="addAluno()"
-    />
-    <button class="btn btnInput" @click="addAluno()"> Adicionar </button>
+    <titulo :texto = "professorId != undefined? 'Professor: ' + professor.nome : 'Todos os Alunos'"/>
+    
+    <div v-if="professorId != undefined">
+        <input
+        type="text"
+        placeholder="Nome do Aluno"
+        v-model="nome"
+        v-on:keyup.enter="addAluno()"
+      />
+      <button class="btn btnInput" @click="addAluno()"> Adicionar </button>
+    </div>
+
     <br />
     <br />
     <table>
@@ -43,16 +47,28 @@ export default {
   data() {
     return {
       titulo: "Alunos",
+      professorId: this.$route.params.prof_id,
+      professor:{},
       nome: "",
       alunos: []
     };
   },
 
   created(){
-    this.$http
-    .get('http://localhost:3000/alunos/')
-    .then(res => res.json())
-    .then(alunos => this.alunos = alunos)
+    if(this.professorId){
+      this.carregarProfessores()
+      this.$http
+      .get('http://localhost:3000/alunos?professor.id=' + this.professorId)
+      .then(res => res.json())
+      .then(alunos => this.alunos = alunos)
+    }
+    else{
+      this.$http
+      .get('http://localhost:3000/alunos/')
+      .then(res => res.json())
+      .then(alunos => this.alunos = alunos)
+    }
+
   },
 
   props: {
@@ -63,7 +79,11 @@ export default {
     addAluno() {
       let _aluno = {
         nome: this.nome,
-        sobrenome: ""
+        sobrenome: "",
+        professor:{
+          id: this.professor.id,
+          nome: this.professor.nome
+        }
       }
 
       if(_aluno.nome !== ""){
@@ -85,6 +105,14 @@ export default {
         let indice = this.alunos.indexOf(aluno);
         this.alunos.splice(indice, 1);
       })      
+    },
+    carregarProfessores() {
+      this.$http
+        .get("http://localhost:3000/professores/" + this.professorId)
+        .then((res) => res.json())
+        .then((professor) => {
+          this.professor = professor;
+        });
     }
   },
 };
