@@ -14,7 +14,7 @@
               {{professor.nome}} {{professor.sobrenome}}
             </router-link>
           <td> 
-            3            
+              {{professor.qtdAlunos}}     
           </td>
         </tr>
       </tbody>
@@ -28,20 +28,53 @@
 <script>
 import Titulo from '../_share/Titulo'
     export default {
-        components:{
-            Titulo
+      components:{
+          Titulo
+      },
+      data() {
+          return {
+              titulo: "Alunos",
+              nome: "",
+              professores: [],
+              Alunos: []
+            };
         },
-        data() {
-            return {
-                titulo: "Alunos",
-                nome: "",
-                professores: [
-                    {id: 1, nome: 'George', sobrenome: 'Souza'},
-                    {id: 2, nome: 'James', sobrenome: 'Xavier'},
-                    {id: 3, nome: 'Fernada', sobrenome: 'Cobain'}
-                ]
-        };
-  },
+      created(){
+        this.$http
+        .get('http://localhost:3000/alunos/')
+        .then(res => res.json())
+        .then(alunos => {
+          this.Alunos = alunos;
+          this.carregarProfessores();
+          })
+      },
+      props:{
+
+      }, 
+      methods: {
+        pegarQtdAlunosPorProfessor(){
+          this.professores.forEach((professor, index) => {
+            professor = {
+              id: professor.id,
+              nome: professor.nome,
+              qtdAlunos: this.Alunos.filter(
+                aluno => aluno.professor.id == professor.id
+              ).length
+            }
+            this.professores[index] = professor;
+          });
+        },
+
+        carregarProfessores(){
+          this.$http
+          .get('http://localhost:3000/professores/')
+          .then(res => res.json())
+          .then(professor => {
+            this.professores = professor;
+            this.pegarQtdAlunosPorProfessor();
+            });
+        }
+      }
     }
 </script>
 
