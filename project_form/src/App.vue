@@ -60,7 +60,7 @@ html {
   padding: 10px 20px;
   cursor: pointer;
   border: 1px solid #000;
-  font-size: 1.5em;
+  font-size: 1.2em;
   color: white;
   font-weight: bold;
   border-radius: 7px;
@@ -94,5 +94,8 @@ table thead th {
 }
 .colPequeno {
   width: 5%;
+  text-align: right;
+  background-color: rgb(125, 217, 245);
+  font-weight: bold;
 }
 </style>
