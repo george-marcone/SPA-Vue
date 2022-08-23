@@ -22,31 +22,66 @@ namespace form_API.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok();
+            try
+            {
+                return Ok();
+            }
+            catch (System.Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
+            }
         }
 
         [HttpGet("{ProfessorId}")]
         public IActionResult Get(int ProfessorId)
         {
-            return Ok();
+            try
+            {
+                return Ok();
+            }
+            catch (System.Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
+            }
         }
 
         [HttpPost]
         public IActionResult Post()
         {
-            return Ok();
+            try
+            {
+                return Ok();
+            }
+            catch (System.Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
+            }
         }
 
         [HttpPut("{ProfessorId}")]
         public IActionResult Put(int ProfessorId)
         {
-            return Ok();
+            try
+            {
+                return Ok();
+            }
+            catch (System.Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
+            }
         }
 
         [HttpDelete("{ProfessorId}")]
         public IActionResult Delete(int ProfessorId)
         {
-            return Ok();
+            try
+            {
+                return Ok();
+            }
+            catch (System.Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
+            }
         }
 
         public IActionResult Index()
