@@ -1,6 +1,6 @@
 <template>
   <div>
-    <titulo texto="Professores" />
+    <titulo texto="Professores" btnVoltar="true"/>
     <table>
       <thead>
         <th>Cód.</th>
@@ -25,7 +25,11 @@
         </tr>
       </tbody>
       <tfoot v-else>
-        Nenhum Professor Encontrado
+        <tr>
+          <td colspan="3" style="text-align: center">
+            <h5>Nenhum Professor Encontrado</h5>
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -47,9 +51,9 @@ export default {
   },
   created() {
     this.$http
-      .get("http://localhost:3000/alunos/")
-      .then((res) => res.json())
-      .then((alunos) => {
+      .get("http://localhost:5001/api/aluno")
+      .then(res => res.json())
+      .then(alunos => {
         this.Alunos = alunos;
         this.carregarProfessores();
       });
@@ -62,7 +66,7 @@ export default {
           id: professor.id,
           nome: professor.nome,
           qtdAlunos: this.Alunos.filter(
-            (aluno) => aluno.professor.id == professor.id
+            aluno => aluno.professor.id == professor.id
           ).length,
         };
         this.professores[index] = professor;
@@ -71,9 +75,9 @@ export default {
 
     carregarProfessores() {
       this.$http
-        .get("http://localhost:3000/professores/")
-        .then((res) => res.json())
-        .then((professor) => {
+        .get("http://localhost:5001/api/professor")
+        .then(res => res.json())
+        .then(professor => {
           this.professores = professor;
           this.pegarQtdAlunosPorProfessor();
         });
