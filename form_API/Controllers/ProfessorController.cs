@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using form_API.Data;
+using form_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -13,18 +15,21 @@ namespace form_API.Controllers
     public class ProfessorController : Controller
     {
         private readonly ILogger<ProfessorController> _logger;
+        public IRepository _repo { get; }
 
-        public ProfessorController(ILogger<ProfessorController> logger)
+        public ProfessorController(IRepository repo, ILogger<ProfessorController> logger)
         {
+            _repo = repo;
             _logger = logger;
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                return Ok();
+                var result = await _repo.GetAllProfessoresAsync(true);
+                return Ok(result);
             }
             catch (System.Exception)
             {
@@ -33,11 +38,12 @@ namespace form_API.Controllers
         }
 
         [HttpGet("{ProfessorId}")]
-        public IActionResult Get(int ProfessorId)
+        public async Task<IActionResult> GetByProfessorId(int ProfessorId)
         {
             try
             {
-                return Ok();
+                var result = await _repo.GetProfessorAsyncById(ProfessorId, true);
+                return Ok(result);
             }
             catch (System.Exception)
             {
@@ -46,53 +52,65 @@ namespace form_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post()
+        public async Task<IActionResult> Post(Professor model)
         {
             try
             {
-                return Ok();
+                _repo.Add(model);
+                if (await _repo.SaveChangesAsync())
+                {
+                    return Created($"/api/professor/{model.Id}", model);
+                }
+
             }
             catch (System.Exception)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
+            return BadRequest();
         }
 
         [HttpPut("{ProfessorId}")]
-        public IActionResult Put(int ProfessorId)
+        public async Task<IActionResult> Put(int ProfessorId, Professor model)
         {
             try
             {
-                return Ok();
+                var professor = await _repo.GetProfessorAsyncById(ProfessorId, false);
+                if (professor == null) return NotFound();
+
+                _repo.Update(model);
+                if (await _repo.SaveChangesAsync())
+                {
+                    professor = await _repo.GetProfessorAsyncById(ProfessorId, true);
+                    return Created($"/api/professor/{model.Id}", professor);
+                    // return Created($"/api/professor/{model.Id}", model);
+                }
             }
             catch (System.Exception)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
+            return BadRequest();
         }
 
         [HttpDelete("{ProfessorId}")]
-        public IActionResult Delete(int ProfessorId)
+        public async Task<IActionResult> Delete(int ProfessorId)
         {
             try
             {
-                return Ok();
+                var professor = await _repo.GetProfessorAsyncById(ProfessorId, false);
+                if (professor == null) return NotFound();
+                _repo.Delete(professor);
+                if (await _repo.SaveChangesAsync())
+                {
+                    return Ok();
+                }
             }
             catch (System.Exception)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
-        }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View("Error!");
+            return BadRequest();
         }
     }
 }
