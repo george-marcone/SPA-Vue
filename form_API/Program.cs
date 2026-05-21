@@ -14,11 +14,18 @@ builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(
-    x => x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    x => x.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
 
 var app = builder.Build();
+
+// Apply pending migrations at startup (ensures database schema exists)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -9,17 +9,11 @@
 </template>
 
 <script>
-import Alunos from "./components/Aluno/Alunos";
-import Professor from "./components/Professor/Professor";
-import Sobre from "./components/Sobre/Sobre.vue";
 import Nav from "./components/_nav/Nav";
 
 export default {
   name: "app",
   components: {
-    Alunos,
-    Professor,
-    Sobre,
     Nav,
   },
 };

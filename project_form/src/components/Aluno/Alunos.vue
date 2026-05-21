@@ -57,6 +57,7 @@
 import Titulo from "../_share/Titulo";
 
 export default {
+  name: "AlunosComponent",
   components: {
     Titulo,
   },

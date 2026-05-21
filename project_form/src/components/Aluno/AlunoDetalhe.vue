@@ -110,7 +110,7 @@ export default {
         });
     },
 
-    editar(aluno) {
+    editar() {
       this.visualizando = !this.visualizando;
     },
     salvar(_aluno) {

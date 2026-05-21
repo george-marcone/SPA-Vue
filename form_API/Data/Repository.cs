@@ -68,7 +68,7 @@ namespace form_API.Data
             return await query.ToArrayAsync();
         }
 
-        public async Task<Aluno> GetAlunoAsyncById(int AlunoId, bool includeProfessor)
+        public async Task<Aluno?> GetAlunoAsyncById(int AlunoId, bool includeProfessor)
         {
             IQueryable<Aluno> query = _context.Alunos;
             if (includeProfessor)
@@ -102,7 +102,7 @@ namespace form_API.Data
             return await query.ToArrayAsync();
         }
 
-        public async Task<Professor> GetProfessorAsyncById(int ProfessorId, bool includeAluno)
+        public async Task<Professor?> GetProfessorAsyncById(int ProfessorId, bool includeAluno)
         {
             IQueryable<Professor> query = _context.Professores;
             if (includeAluno)

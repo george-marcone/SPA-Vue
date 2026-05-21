@@ -9,9 +9,10 @@
 <script>
     import Titulo from '../_share/Titulo'
     export default {
-    components: { 
+      name: "SobreComponent",
+      components: { 
         Titulo 
-        },        
+      },        
     }
 </script>
 

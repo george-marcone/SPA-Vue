@@ -12,6 +12,7 @@
 
 <script>
     export default {
+        name: "TituloComponent",
         props: {
             texto: String,
             btnVoltar: Boolean

@@ -38,6 +38,7 @@
 <script>
 import Titulo from "../_share/Titulo";
 export default {
+  name: "ProfessorComponent",
   components: {
     Titulo,
   },

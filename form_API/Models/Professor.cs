@@ -8,7 +8,7 @@ namespace form_API.Models
     public class Professor
     {
         public int Id { get; set; }
-        public string Nome { get; set; }
-        public List<Aluno> Alunos { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public List<Aluno> Alunos { get; set; } = new();
     }
 }
