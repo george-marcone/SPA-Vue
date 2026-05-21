@@ -1,6 +1,12 @@
 .DS_Store
 node_modules
 /dist
+.nuxt
+.output
+project_form/.nuxt
+project_form/.output
+project_form/.nuxtrc
+project_form/dist
 
 
 # local env files
@@ -25,3 +31,4 @@ pnpm-debug.log*
 # Arquivos .net
 bin
 obj
+Backend_API/form-dev.db*
