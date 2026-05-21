@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using form_API.Data;
-using form_API.Models;
+using form_API.Services;
+using form_API.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -12,14 +8,14 @@ namespace form_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProfessorController : Controller
+    public class ProfessorController : ControllerBase
     {
         private readonly ILogger<ProfessorController> _logger;
-        public IRepository _repo { get; }
+        private readonly IProfessorService _professorService;
 
-        public ProfessorController(IRepository repo, ILogger<ProfessorController> logger)
+        public ProfessorController(IProfessorService professorService, ILogger<ProfessorController> logger)
         {
-            _repo = repo;
+            _professorService = professorService;
             _logger = logger;
         }
 
@@ -28,12 +24,13 @@ namespace form_API.Controllers
         {
             try
             {
-                var result = await _repo.GetAllProfessoresAsync(true);
+                var result = await _professorService.GetAllAsync(true);
                 return Ok(result);
             }
-            catch (System.Exception)
+            catch
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
+                _logger.LogError("Erro ao obter professores");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
         }
 
@@ -42,55 +39,46 @@ namespace form_API.Controllers
         {
             try
             {
-                var result = await _repo.GetProfessorAsyncById(ProfessorId, true);
+                var result = await _professorService.GetByIdAsync(ProfessorId, true);
+                if (result == null) return NotFound();
                 return Ok(result);
             }
-            catch (System.Exception)
+            catch
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
+                _logger.LogError("Erro ao obter professor por id");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Professor model)
+        public async Task<IActionResult> Post(ProfessorCreateEditViewModel model)
         {
             try
             {
-                _repo.Add(model);
-                if (await _repo.SaveChangesAsync())
-                {
-                    return Created($"/api/professor/{model.Id}", model);
-                }
-
+                var created = await _professorService.AddAsync(model);
+                return CreatedAtAction(nameof(GetByProfessorId), new { ProfessorId = created.Id }, created);
             }
-            catch (System.Exception)
+            catch
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
+                _logger.LogError("Erro ao criar professor");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
-            return BadRequest();
         }
 
         [HttpPut("{ProfessorId}")]
-        public async Task<IActionResult> Put(int ProfessorId, Professor model)
+        public async Task<IActionResult> Put(int ProfessorId, ProfessorCreateEditViewModel model)
         {
             try
             {
-                var professor = await _repo.GetProfessorAsyncById(ProfessorId, false);
-                if (professor == null) return NotFound();
-
-                _repo.Update(model);
-                if (await _repo.SaveChangesAsync())
-                {
-                    professor = await _repo.GetProfessorAsyncById(ProfessorId, true);
-                    return Created($"/api/professor/{model.Id}", professor);
-                    // return Created($"/api/professor/{model.Id}", model);
-                }
+                var updated = await _professorService.UpdateAsync(ProfessorId, model);
+                if (updated == null) return NotFound();
+                return CreatedAtAction(nameof(GetByProfessorId), new { ProfessorId = updated.Id }, updated);
             }
-            catch (System.Exception)
+            catch
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
+                _logger.LogError("Erro ao atualizar professor");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
-            return BadRequest();
         }
 
         [HttpDelete("{ProfessorId}")]
@@ -98,19 +86,15 @@ namespace form_API.Controllers
         {
             try
             {
-                var professor = await _repo.GetProfessorAsyncById(ProfessorId, false);
-                if (professor == null) return NotFound();
-                _repo.Delete(professor);
-                if (await _repo.SaveChangesAsync())
-                {
-                    return Ok();
-                }
+                var deleted = await _professorService.DeleteAsync(ProfessorId);
+                if (!deleted) return NotFound();
+                return Ok();
             }
-            catch (System.Exception)
+            catch
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
+                _logger.LogError("Erro ao excluir professor");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
-            return BadRequest();
         }
     }
 }

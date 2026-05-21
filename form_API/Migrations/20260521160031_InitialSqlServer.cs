@@ -2,19 +2,23 @@
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace form_API.Migrations
 {
-    public partial class Init : Migration
+    /// <inheritdoc />
+    public partial class InitialSqlServer : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
                 name: "Professores",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Nome = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -25,12 +29,12 @@ namespace form_API.Migrations
                 name: "Alunos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Nome = table.Column<string>(type: "TEXT", nullable: false),
-                    Sobrenome = table.Column<string>(type: "TEXT", nullable: false),
-                    DataNasc = table.Column<string>(type: "TEXT", nullable: false),
-                    ProfessorId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Sobrenome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DataNasc = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProfessorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,32 +50,22 @@ namespace form_API.Migrations
             migrationBuilder.InsertData(
                 table: "Professores",
                 columns: new[] { "Id", "Nome" },
-                values: new object[] { 1, "Vinicius" });
-
-            migrationBuilder.InsertData(
-                table: "Professores",
-                columns: new[] { "Id", "Nome" },
-                values: new object[] { 2, "Paula" });
-
-            migrationBuilder.InsertData(
-                table: "Professores",
-                columns: new[] { "Id", "Nome" },
-                values: new object[] { 3, "Suzana" });
+                values: new object[,]
+                {
+                    { 1, "Vinicius" },
+                    { 2, "Paula" },
+                    { 3, "Suzana" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Alunos",
                 columns: new[] { "Id", "DataNasc", "Nome", "ProfessorId", "Sobrenome" },
-                values: new object[] { 1, "25/02/1982", "Maria", 1, "Solano" });
-
-            migrationBuilder.InsertData(
-                table: "Alunos",
-                columns: new[] { "Id", "DataNasc", "Nome", "ProfessorId", "Sobrenome" },
-                values: new object[] { 2, "25/01/2000", "Joao", 2, "Gomes" });
-
-            migrationBuilder.InsertData(
-                table: "Alunos",
-                columns: new[] { "Id", "DataNasc", "Nome", "ProfessorId", "Sobrenome" },
-                values: new object[] { 3, "22/02/2002", "Alex", 3, "Alves" });
+                values: new object[,]
+                {
+                    { 1, "25/02/1982", "Maria", 1, "Solano" },
+                    { 2, "25/01/2000", "Joao", 2, "Gomes" },
+                    { 3, "22/02/2002", "Alex", 3, "Alves" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Alunos_ProfessorId",
@@ -79,6 +73,7 @@ namespace form_API.Migrations
                 column: "ProfessorId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
