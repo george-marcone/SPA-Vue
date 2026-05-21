@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
-import type { AuthResponse, LoginCredentials, UsuarioSummary } from '~/types/api'
+import type { AlterarSenhaPayload, AuthResponse, LoginCredentials, UsuarioSummary } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
 
 const STORAGE_KEY = 'form-escola-auth'
@@ -10,12 +10,14 @@ interface StoredSession {
   token: string
   expiraEm: string
   usuario: UsuarioSummary
+  deveAlterarSenhaPadrao: boolean
 }
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
   const expiraEm = ref<string | null>(null)
   const usuario = ref<UsuarioSummary | null>(null)
+  const deveAlterarSenhaPadrao = ref(false)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -56,10 +58,32 @@ export const useAuthStore = defineStore('auth', () => {
     return usuario.value
   }
 
+  async function alterarSenha(payload: AlterarSenhaPayload) {
+    loading.value = true
+    error.value = null
+
+    try {
+      const { $api } = useNuxtApp()
+      usuario.value = await $api<UsuarioSummary>('/auth/alterar-senha', {
+        method: 'POST',
+        body: payload
+      })
+      deveAlterarSenhaPadrao.value = false
+      persist()
+      return usuario.value
+    } catch (err) {
+      error.value = normalizeApiError(err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   function setSession(session: AuthResponse | StoredSession) {
     token.value = session.token
     expiraEm.value = session.expiraEm
     usuario.value = session.usuario
+    deveAlterarSenhaPadrao.value = Boolean(session.deveAlterarSenhaPadrao)
     persist()
   }
 
@@ -67,6 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
     expiraEm.value = null
     usuario.value = null
+    deveAlterarSenhaPadrao.value = false
     error.value = null
 
     if (canUseStorage()) {
@@ -107,7 +132,8 @@ export const useAuthStore = defineStore('auth', () => {
       JSON.stringify({
         token: token.value,
         expiraEm: expiraEm.value,
-        usuario: usuario.value
+        usuario: usuario.value,
+        deveAlterarSenhaPadrao: deveAlterarSenhaPadrao.value
       })
     )
   }
@@ -116,6 +142,7 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     expiraEm,
     usuario,
+    deveAlterarSenhaPadrao,
     loading,
     error,
     isAuthenticated,
@@ -124,6 +151,7 @@ export const useAuthStore = defineStore('auth', () => {
     canWrite,
     login,
     fetchMe,
+    alterarSenha,
     setSession,
     logout,
     loadFromStorage

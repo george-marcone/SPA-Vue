@@ -4,6 +4,10 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (to.meta.public) {
     if (auth.isAuthenticated) {
+      if (auth.deveAlterarSenhaPadrao) {
+        return navigateTo('/alterar-senha')
+      }
+
       return navigateTo('/')
     }
 
@@ -12,6 +16,10 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (!auth.isAuthenticated) {
     return navigateTo('/login')
+  }
+
+  if (auth.deveAlterarSenhaPadrao && to.path !== '/alterar-senha') {
+    return navigateTo('/alterar-senha')
   }
 
   const roles = to.meta.roles as string[] | undefined

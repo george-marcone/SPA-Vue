@@ -73,9 +73,10 @@ sequenceDiagram
     S->>DB: Busca Usuario + Perfil
     DB-->>S: Usuario com Senha hash
     S->>S: PasswordHasher.VerifyPassword
+    S->>S: Verifica se usa Senha@252525
     S->>S: Gera JWT com id, email, nome, perfil
     S-->>A: AuthResponseViewModel
-    A-->>C: 200 OK + token
+    A-->>C: 200 OK + token + deveAlterarSenhaPadrao
     C->>A: GET endpoint protegido Authorization: Bearer token
     A->>A: Middleware valida assinatura, issuer, audience e expiracao
     A-->>C: Resposta ou 401/403
@@ -304,6 +305,8 @@ Seed inicial:
 
 Tambem existem usuarios seedados para professores e alunos.
 
+Usuarios criados pelo cadastro recebem automaticamente a senha inicial `Senha@252525`, sempre armazenada como hash. O campo de senha nao faz parte do payload de cadastro de usuario.
+
 ### Professor
 
 Tabela de professores.
@@ -424,15 +427,18 @@ Validators existentes:
 - `DiretoriaCreateEditViewModelValidator`
 - `LoginRequestViewModelValidator`
 - `UsuarioCreateViewModelValidator`
+- `AlterarSenhaViewModelValidator`
 
 Regras principais:
 
-- Campos obrigatorios para nomes, email, telefone e senha.
+- Campos obrigatorios para nomes, email e telefone nos cadastros.
 - Tamanho maximo para nomes e email.
 - Data de nascimento de aluno no formato `dd/MM/yyyy`.
 - `ProfessorId`, `IdUsuario` e `IdPerfil` devem ser positivos quando informados.
 - Email deve ter formato valido.
-- Senha de usuario deve ter no minimo 8 caracteres.
+- Senha e obrigatoria no login.
+- Nova senha deve ter no minimo 8 caracteres, maiuscula, minuscula, numero e caractere especial.
+- Nova senha nao pode ser igual a senha padrao `Senha@252525`.
 
 ## Testes unitarios
 
@@ -450,10 +456,13 @@ Cobertura atual:
 - `AlunoControllerTests`: valida listagem e criacao de aluno.
 - `UsuariosControllerTests`: valida criacao de usuario.
 - `AlunoServiceTests`: valida mapeamento e criacao de aluno.
-- `UsuarioServiceTests`: valida hash de senha e duplicidade de email.
+- `UsuarioServiceTests`: valida hash da senha padrao e duplicidade de email.
+- `AuthServiceTests`: valida login com flag de senha padrao e troca de senha.
 - `AlunoCreateEditViewModelValidatorTests`: valida regras de aluno.
 - `ProfessorCreateEditViewModelValidatorTests`: valida regras de professor.
 - `UsuarioCreateViewModelValidatorTests`: valida regras de usuario.
+- `AlterarSenhaViewModelValidatorTests`: valida regras da nova senha.
+- `SqlInjectionProtectionTests`: impede uso de APIs de SQL bruto na aplicacao.
 
 Comando:
 
@@ -468,8 +477,9 @@ dotnet test form_API.Tests/form_API.Tests.csproj
 
 | Metodo | Rota | Autorizacao | Descricao |
 | --- | --- | --- | --- |
-| POST | `/api/Auth/login` | Publico | Autentica usuario e retorna JWT |
+| POST | `/api/Auth/login` | Publico | Autentica usuario e retorna JWT com flag de senha padrao |
 | GET | `/api/Auth/me` | Autenticado | Retorna usuario atual |
+| POST | `/api/Auth/alterar-senha` | Autenticado | Altera a senha do usuario autenticado |
 | GET | `/api/Auth/autorizar` | Autenticado | Verifica se o token e valido |
 | GET | `/api/Auth/autorizar/admin` | Administrador | Verifica acesso administrativo |
 
@@ -552,10 +562,11 @@ Payload de criacao/atualizacao:
   "nome": "Usuario Novo",
   "email": "novo@escola.com",
   "telefone": "11999990000",
-  "senha": "Senha@123",
   "idPerfil": 2
 }
 ```
+
+Na criacao, a senha inicial e definida automaticamente como `Senha@252525`.
 
 ## Tratamento de erros
 
@@ -608,7 +619,7 @@ docker run -d --name form_api_app --network form_api_net -p 8080:80 \
 
 ## Pontos de evolucao
 
-- Separar `UsuarioCreateViewModel` de `UsuarioUpdateViewModel` para permitir update sem troca obrigatoria de senha.
-- Adicionar testes para `AuthService`, `DiretoriaService`, `ProfessorService` e autorizacao.
+- Separar `UsuarioCreateViewModel` de `UsuarioUpdateViewModel` para contratos ainda mais especificos.
+- Adicionar testes para `DiretoriaService`, `ProfessorService` e autorizacao.
 - Criar controllers especificos de `Perfil` se a tabela deixar de ser apenas dominio fixo.
 - Mover segredos JWT e senha do banco para variaveis de ambiente em todos os ambientes.

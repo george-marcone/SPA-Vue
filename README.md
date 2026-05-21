@@ -2,9 +2,23 @@
 
 Aplicacao escolar com backend ASP.NET Core e frontend Nuxt 3 em modo SPA.
 
+## Atualizacoes recentes
+
+- Frontend em `project_form` usando Nuxt 3, Vite, Pinia e Vitest.
+- Login com JWT, sessao persistida no Pinia e middleware de rota autenticada.
+- Cadastro de usuarios sem campo de senha.
+- Novos usuarios recebem a senha inicial padrao `Senha@252525`.
+- Quando o usuario entra com a senha padrao, o sistema exige a troca antes de liberar as demais telas.
+- Tela de alteracao de senha com medidor de forca.
+- Backend com endpoint protegido `POST /api/Auth/alterar-senha`.
+- Protecao contra SQL injection por consultas LINQ/EF Core parametrizadas, validacao de entrada e teste automatizado contra uso de SQL bruto.
+- Workflow separado para CI/CD do frontend e publicacao estatica no GitHub Pages.
+
 ## Documentacao
 
 - Documentacao tecnica do backend: [docs/backend-tecnico.md](docs/backend-tecnico.md)
+- Documentacao do frontend: [docs/frontend-arquitetura.md](docs/frontend-arquitetura.md)
+- PDF do frontend: [docs/frontend-arquitetura.pdf](docs/frontend-arquitetura.pdf)
 - Swagger/OpenAPI da API: `http://localhost:8080/swagger` quando a API roda em container, ou a URL exibida por `dotnet run`.
 
 ## Backend
@@ -25,7 +39,7 @@ dotnet test form_API.Tests/form_API.Tests.csproj
 dotnet ef database update
 ```
 
-Usuario inicial:
+Usuario inicial de seed:
 
 ```text
 Email: admin@escola.com
@@ -33,10 +47,17 @@ Senha: Senha@123
 Perfil: Administrador
 ```
 
+Novos usuarios cadastrados pela tela de usuario recebem:
+
+```text
+Senha inicial: Senha@252525
+```
+
 Endpoints principais:
 
 - `POST /api/Auth/login`
 - `GET /api/Auth/me`
+- `POST /api/Auth/alterar-senha`
 - `GET /api/Aluno`
 - `GET /api/Professor`
 - `GET /api/Diretoria`
@@ -107,15 +128,21 @@ npm run generate
 npm test
 ```
 
-Variavel de ambiente:
+Variaveis de ambiente:
 
 ```bash
 NUXT_PUBLIC_API_BASE=http://localhost:8080/api
+NUXT_APP_BASE_URL=/
 ```
+
+Para GitHub Pages, o workflow define `NUXT_APP_BASE_URL` como `/{nome-do-repositorio}/`.
 
 ## CI/CD
 
 Os workflows em `.github/workflows` usam os subdiretorios do mesmo repositorio:
 
-- `Backend_API` para restore, build e testes .NET
-- `project_form` para install, build/generate e testes unitarios Nuxt/Vitest
+- `ci-backend-frontend.yml`: build e testes do backend e do frontend em jobs separados.
+- `frontend-pages.yml`: CI do frontend e deploy estatico no GitHub Pages.
+- `master_spa-vue.yml`: build do frontend e deploy manual para Azure Web App.
+
+Para publicar no GitHub Pages, configure `NUXT_PUBLIC_API_BASE` como variavel ou secret do repositorio apontando para a API publicada.

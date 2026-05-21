@@ -23,6 +23,7 @@ describe('auth store', () => {
     const response: AuthResponse = {
       token: 'jwt-token',
       expiraEm: '2026-05-21T22:00:00Z',
+      deveAlterarSenhaPadrao: false,
       usuario: {
         idUsuario: 1,
         nome: 'Administrador Sistema',
@@ -44,6 +45,7 @@ describe('auth store', () => {
     expect(auth.token).toBe('jwt-token')
     expect(auth.isAuthenticated).toBe(true)
     expect(auth.isAdmin).toBe(true)
+    expect(auth.deveAlterarSenhaPadrao).toBe(false)
     expect(localStorage.getItem('form-escola-auth')).toContain('jwt-token')
   })
 
@@ -52,6 +54,7 @@ describe('auth store', () => {
     auth.setSession({
       token: 'jwt-token',
       expiraEm: '2026-05-21T22:00:00Z',
+      deveAlterarSenhaPadrao: true,
       usuario: {
         idUsuario: 1,
         nome: 'Administrador Sistema',
@@ -66,7 +69,49 @@ describe('auth store', () => {
 
     expect(auth.token).toBeNull()
     expect(auth.usuario).toBeNull()
+    expect(auth.deveAlterarSenhaPadrao).toBe(false)
     expect(auth.isAuthenticated).toBe(false)
     expect(localStorage.getItem('form-escola-auth')).toBeNull()
+  })
+
+  it('changes password and clears the default password flag', async () => {
+    const auth = useAuthStore()
+    auth.setSession({
+      token: 'jwt-token',
+      expiraEm: '2026-05-21T22:00:00Z',
+      deveAlterarSenhaPadrao: true,
+      usuario: {
+        idUsuario: 2,
+        nome: 'Usuario Padrao',
+        email: 'padrao@escola.com',
+        telefone: '11999990000',
+        idPerfil: 2,
+        descricaoPerfil: 'Contribuinte'
+      }
+    })
+    apiMock.mockResolvedValue({
+      idUsuario: 2,
+      nome: 'Usuario Padrao',
+      email: 'padrao@escola.com',
+      telefone: '11999990000',
+      idPerfil: 2,
+      descricaoPerfil: 'Contribuinte'
+    })
+
+    await auth.alterarSenha({
+      senhaAtual: 'Senha@252525',
+      novaSenha: 'Senha@252526',
+      confirmacaoSenha: 'Senha@252526'
+    })
+
+    expect(apiMock).toHaveBeenCalledWith('/auth/alterar-senha', {
+      method: 'POST',
+      body: {
+        senhaAtual: 'Senha@252525',
+        novaSenha: 'Senha@252526',
+        confirmacaoSenha: 'Senha@252526'
+      }
+    })
+    expect(auth.deveAlterarSenhaPadrao).toBe(false)
   })
 })

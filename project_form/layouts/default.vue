@@ -7,6 +7,7 @@
         <NuxtLink to="/diretoria">Diretoria</NuxtLink>
         <NuxtLink v-if="auth.canWrite" to="/diretoria/novo">Nova diretoria</NuxtLink>
         <NuxtLink v-if="auth.isAdmin" to="/usuarios/novo">Novo usuario</NuxtLink>
+        <NuxtLink to="/alterar-senha">Alterar senha</NuxtLink>
         <NuxtLink to="/professores">Professores</NuxtLink>
         <NuxtLink to="/alunos">Alunos</NuxtLink>
       </nav>

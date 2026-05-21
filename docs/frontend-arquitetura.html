@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Frontend - Arquitetura e regras de negocio</title>
+  <style>
+    @page {
+      margin: 20mm;
+    }
+
+    body {
+      color: #1f2937;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: #111827;
+      line-height: 1.2;
+      margin: 0 0 10px;
+    }
+
+    h1 {
+      border-bottom: 3px solid #2563eb;
+      font-size: 27px;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      border-bottom: 1px solid #d1d5db;
+      font-size: 18px;
+      margin-top: 24px;
+      padding-bottom: 5px;
+    }
+
+    p {
+      margin: 0 0 9px;
+    }
+
+    ul,
+    ol {
+      margin: 6px 0 12px 20px;
+      padding: 0;
+    }
+
+    li {
+      margin: 3px 0;
+    }
+
+    code,
+    pre {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      color: #111827;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 11px;
+    }
+
+    code {
+      padding: 1px 4px;
+    }
+
+    pre {
+      margin: 8px 0 12px;
+      overflow-wrap: anywhere;
+      padding: 10px;
+      white-space: pre-wrap;
+    }
+
+    .meta {
+      color: #4b5563;
+      font-size: 12px;
+      margin-bottom: 18px;
+    }
+
+    .callout {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      margin: 12px 0;
+      padding: 10px 12px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+      margin: 12px 0;
+    }
+
+    .box {
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .box strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .page-break {
+      break-before: page;
+    }
+  </style>
+</head>
+<body>
+  <h1>Frontend - Arquitetura e regras de negocio</h1>
+  <p class="meta">Projeto SPA-Vue - documento gerado em 21/05/2026</p>
+
+  <h2>Visao geral</h2>
+  <p>O frontend fica em <code>project_form</code> e foi preparado como uma SPA em Nuxt 3. O Nuxt usa Vite no ambiente de desenvolvimento e no build, Pinia para estado global e Vitest para testes unitarios.</p>
+  <p>A aplicacao conversa com o backend <code>Backend_API</code> por HTTP usando JWT. O token recebido no login e salvo pelo store de autenticacao e enviado nas proximas requisicoes pelo plugin de API.</p>
+
+  <div class="grid">
+    <div class="box">
+      <strong>Front</strong>
+      Nuxt 3, Vite, Pinia, TypeScript, Vitest e CSS global.
+    </div>
+    <div class="box">
+      <strong>Back</strong>
+      ASP.NET Core, Entity Framework Core, SQL Server, JWT Bearer e FluentValidation.
+    </div>
+  </div>
+
+  <h2>Tecnologias</h2>
+  <ul>
+    <li>Nuxt 3 com <code>ssr: false</code>.</li>
+    <li>Vite como bundler do Nuxt.</li>
+    <li>Pinia e <code>@pinia/nuxt</code> para estado global.</li>
+    <li>Vitest, Vue Test Utils e Happy DOM para testes.</li>
+    <li>TypeScript em modo estrito.</li>
+    <li>GitHub Actions para build, testes, geracao estatica e deploy no GitHub Pages.</li>
+  </ul>
+
+  <h2>Estrutura principal</h2>
+  <ul>
+    <li><code>pages/login.vue</code>: entrada do usuario, autenticacao JWT e troca da senha padrao apos o primeiro login.</li>
+    <li><code>pages/alterar-senha.vue</code>: tela autenticada para alterar senha a qualquer momento.</li>
+    <li><code>pages/usuarios/novo.vue</code>: cadastro de usuario sem campo de senha.</li>
+    <li><code>pages/diretoria/novo.vue</code>: cadastro da tabela Diretoria.</li>
+    <li><code>stores/auth.ts</code>: sessao, usuario logado, token, flag de senha padrao e acao de alteracao de senha.</li>
+    <li><code>middleware/auth.global.ts</code>: protecao de rotas e bloqueio de navegacao enquanto a senha padrao nao for alterada.</li>
+    <li><code>components/PasswordStrengthMeter.vue</code>: medidor visual de forca de senha.</li>
+    <li><code>utils/password-strength.ts</code>: regra reutilizavel para classificar senhas.</li>
+  </ul>
+
+  <h2>Regra de negocio - cadastro de usuario</h2>
+  <p>O cadastro de usuario nao exibe mais o campo de senha. A tela envia apenas dados cadastrais, como nome, email, telefone e perfil.</p>
+  <div class="callout">
+    Novos usuarios recebem automaticamente a senha inicial <strong>Senha@252525</strong>.
+  </div>
+  <p>Essa senha nao e salva em texto puro. O backend aplica hash PBKDF2-SHA256 pelo <code>PasswordHasher</code>.</p>
+
+  <h2>Regra de negocio - troca obrigatoria</h2>
+  <p>Quando o usuario faz login, o backend valida email e senha e devolve o JWT. Na mesma resposta, tambem devolve a flag abaixo:</p>
+  <pre>{
+  "deveAlterarSenhaPadrao": true
+}</pre>
+  <p>Se essa flag vier como <code>true</code>, o frontend mantem o usuario autenticado, mas bloqueia a navegacao normal e exibe a tela de troca de senha.</p>
+  <p>O usuario deve informar senha atual, nova senha e confirmacao. A nova senha deve ser diferente da senha atual e nao pode continuar sendo <code>Senha@252525</code>.</p>
+  <p>Depois que a senha e alterada com sucesso, o Pinia limpa a flag <code>deveAlterarSenhaPadrao</code> e libera a navegacao.</p>
+
+  <h2>Medidor de forca de senha</h2>
+  <p>O medidor usa <code>utils/password-strength.ts</code>. A classificacao considera tamanho minimo, letras minusculas, letras maiusculas, numeros e caracteres especiais.</p>
+  <p>As faixas exibidas sao: nao informada, fraca, media e forte. O componente <code>PasswordStrengthMeter.vue</code> mostra barra visual, rotulo da forca e dicas para melhorar a senha.</p>
+
+  <h2>Autenticacao e estado</h2>
+  <p>O store <code>stores/auth.ts</code> concentra token JWT, dados resumidos do usuario, data de expiracao, indicador <code>deveAlterarSenhaPadrao</code> e acoes <code>login</code>, <code>logout</code>, <code>fetchMe</code> e <code>alterarSenha</code>.</p>
+  <p>A sessao e persistida no <code>localStorage</code> para sobreviver ao recarregamento da pagina. O middleware global usa esse estado para proteger rotas autenticadas.</p>
+
+  <h2>Integracao com o backend</h2>
+  <ul>
+    <li><code>POST /api/Auth/login</code></li>
+    <li><code>GET /api/Auth/me</code></li>
+    <li><code>POST /api/Auth/alterar-senha</code></li>
+    <li><code>POST /api/usuarios</code></li>
+    <li><code>POST /api/Diretoria</code></li>
+  </ul>
+  <p>O endpoint de alteracao de senha exige JWT valido.</p>
+
+  <h2>Protecao contra SQL injection</h2>
+  <p>No backend, as consultas usam Entity Framework Core com LINQ. Os valores de entrada sao enviados como parametros pelo provider do EF Core, evitando concatenacao manual de SQL.</p>
+  <p>Tambem foram adicionadas validacoes com FluentValidation nos contratos de entrada.</p>
+  <p>Para prevenir regressao, existe um teste automatizado em <code>Backend_API/form_API.Tests/Security/SqlInjectionProtectionTests.cs</code>. Esse teste falha se APIs de SQL bruto forem introduzidas no codigo da aplicacao, como <code>FromSqlRaw</code>, <code>ExecuteSqlRaw</code> ou <code>SqlQueryRaw</code>.</p>
+
+  <h2>Testes</h2>
+  <pre>cd project_form
+npm test</pre>
+  <pre>cd Backend_API
+dotnet test form_API.Tests/form_API.Tests.csproj</pre>
+  <p>Foram adicionadas coberturas para store de autenticacao, troca de senha no Pinia, medidor de forca de senha, regra backend da senha padrao, validacao da nova senha e protecao contra SQL bruto.</p>
+
+  <h2>CI/CD do frontend</h2>
+  <p>O workflow <code>.github/workflows/frontend-pages.yml</code> executa um job especifico para o front:</p>
+  <ol>
+    <li>checkout do repositorio;</li>
+    <li>setup do Node.js 22;</li>
+    <li><code>npm ci</code>;</li>
+    <li><code>npm test</code>;</li>
+    <li><code>npm run generate</code>;</li>
+    <li>upload do artefato estatico;</li>
+    <li>deploy no GitHub Pages quando nao for pull request.</li>
+  </ol>
+  <p>Como o frontend esta em uma subpasta do mesmo repositorio, o job usa <code>working-directory: project_form</code>.</p>
+  <p>Para GitHub Pages, <code>NUXT_APP_BASE_URL</code> e definido como <code>/{nome-do-repositorio}/</code>. A URL da API deve ser configurada em <code>NUXT_PUBLIC_API_BASE</code> nas variaveis ou secrets do repositorio.</p>
+
+  <h2>Como rodar localmente</h2>
+  <pre>cd Backend_API
+dotnet run</pre>
+  <pre>cd project_form
+npm ci
+$env:NUXT_PUBLIC_API_BASE='http://localhost:5001/api'
+npm run dev</pre>
+  <p>Para gerar a versao estatica, execute <code>npm run generate</code> dentro de <code>project_form</code>.</p>
+</body>
+</html>

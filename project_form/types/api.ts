@@ -11,7 +11,6 @@ export interface UsuarioCreate {
   nome: string
   email: string
   telefone: string
-  senha: string
   idPerfil: number
 }
 
@@ -29,6 +28,13 @@ export interface AuthResponse {
   token: string
   expiraEm: string
   usuario: UsuarioSummary
+  deveAlterarSenhaPadrao: boolean
+}
+
+export interface AlterarSenhaPayload {
+  senhaAtual: string
+  novaSenha: string
+  confirmacaoSenha: string
 }
 
 export interface Diretoria {

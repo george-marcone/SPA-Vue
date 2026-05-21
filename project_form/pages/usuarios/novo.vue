@@ -32,15 +32,9 @@
           </select>
         </label>
 
-        <label>
-          <span>Senha</span>
-          <input v-model="form.senha" type="password" required minlength="8" autocomplete="new-password" />
-        </label>
-
-        <label>
-          <span>Confirmar senha</span>
-          <input v-model="confirmacaoSenha" type="password" required minlength="8" autocomplete="new-password" />
-        </label>
+        <div class="inline-note">
+          A senha inicial sera definida automaticamente como <strong>Senha@252525</strong>.
+        </div>
       </div>
 
       <p v-if="mensagem" class="alert alert-success">{{ mensagem }}</p>
@@ -66,12 +60,10 @@ definePageMeta({
 const usuarios = useUsuariosStore()
 const mensagem = ref('')
 const erro = ref('')
-const confirmacaoSenha = ref('')
 const form = reactive({
   nome: '',
   email: '',
   telefone: '',
-  senha: '',
   idPerfil: 0
 })
 
@@ -85,20 +77,13 @@ async function salvar() {
   mensagem.value = ''
   erro.value = ''
 
-  if (form.senha !== confirmacaoSenha.value) {
-    erro.value = 'As senhas nao conferem.'
-    return
-  }
-
   try {
     const created = await usuarios.createUsuario({ ...form })
-    mensagem.value = `Usuario ${created.nome} cadastrado.`
+    mensagem.value = `Usuario ${created.nome} cadastrado com senha padrao.`
     form.nome = ''
     form.email = ''
     form.telefone = ''
-    form.senha = ''
     form.idPerfil = 0
-    confirmacaoSenha.value = ''
   } catch (err) {
     erro.value = normalizeApiError(err)
   }
