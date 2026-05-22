@@ -32,3 +32,5 @@ pnpm-debug.log*
 bin
 obj
 Backend_API/form-dev.db*
+Backend_API/logs/*
+!Backend_API/logs/.gitkeep

@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Documentacao Tecnica - Backend API</title>
+  <style>
+    @page {
+      margin: 18mm 14mm;
+      size: A4;
+    }
+
+    :root {
+      --ink: #172033;
+      --muted: #5c667a;
+      --line: #d9e0ea;
+      --panel: #f7f9fc;
+      --brand: #1d4ed8;
+      --accent: #0f766e;
+      --danger: #b42318;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      line-height: 1.48;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 8px;
+      line-height: 1.18;
+    }
+
+    h1 {
+      font-size: 30px;
+    }
+
+    h2 {
+      margin-top: 26px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--line);
+      font-size: 20px;
+      color: var(--brand);
+      page-break-after: avoid;
+    }
+
+    h3 {
+      margin-top: 18px;
+      font-size: 15px;
+      color: var(--accent);
+      page-break-after: avoid;
+    }
+
+    p {
+      margin: 0 0 8px;
+    }
+
+    ul {
+      margin: 6px 0 12px 19px;
+      padding: 0;
+    }
+
+    li {
+      margin: 3px 0;
+    }
+
+    code {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: #eef2f7;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 11px;
+    }
+
+    table {
+      width: 100%;
+      margin: 9px 0 14px;
+      border-collapse: collapse;
+      page-break-inside: avoid;
+    }
+
+    th,
+    td {
+      padding: 7px 8px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef4ff;
+      color: #203252;
+      text-align: left;
+    }
+
+    .cover {
+      display: grid;
+      align-content: center;
+      min-height: 250mm;
+      page-break-after: always;
+    }
+
+    .cover .eyebrow {
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .cover .meta {
+      margin-top: 18px;
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .summary {
+      margin-top: 26px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .toc {
+      page-break-after: always;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      page-break-inside: avoid;
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #203252;
+    }
+
+    .diagram {
+      margin: 12px 0 18px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      page-break-inside: avoid;
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .node {
+      min-width: 108px;
+      padding: 8px 10px;
+      border: 1px solid #b7c6da;
+      border-radius: 7px;
+      background: #fff;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .arrow {
+      color: var(--brand);
+      font-weight: 700;
+    }
+
+    .layer-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .layer {
+      min-height: 92px;
+      padding: 10px;
+      border: 1px solid #b7c6da;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .layer h4 {
+      margin: 0 0 7px;
+      font-size: 13px;
+      color: var(--brand);
+    }
+
+    .entity-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .entity {
+      border: 1px solid #b7c6da;
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+
+    .entity h4 {
+      margin: 0;
+      padding: 8px 10px;
+      background: #eaf2ff;
+      color: var(--brand);
+      font-size: 13px;
+    }
+
+    .entity ul {
+      margin: 8px 10px 10px 24px;
+    }
+
+    .class-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .class-box {
+      border: 1px solid #b7c6da;
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+
+    .class-box h4 {
+      margin: 0;
+      padding: 8px 10px;
+      background: #ecfdf5;
+      color: var(--accent);
+      font-size: 13px;
+    }
+
+    .class-box ul {
+      margin: 8px 10px 10px 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      margin: 2px 4px 2px 0;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #eaf2ff;
+      color: var(--brand);
+      font-weight: 700;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <p class="eyebrow">Backend API</p>
+    <h1>Documentacao Tecnica do Projeto Escolar</h1>
+    <div class="summary">
+      <p>API REST em ASP.NET Core 10 para autenticacao JWT, autorizacao por perfil e CRUD de alunos, professores, usuarios e diretoria.</p>
+      <p>Este documento descreve arquitetura, camadas, comunicacao, regras de negocio, migrations, validacoes, testes, logging e modelo de dados.</p>
+    </div>
+    <div class="meta">
+      <span>Projeto: <strong>form_API</strong></span>
+      <span>Repositorio: <strong>SPA-Vue / Backend_API</strong></span>
+      <span>Gerado em: <strong>22/05/2026</strong></span>
+    </div>
+  </section>
+
+  <section class="toc">
+    <h2>Indice</h2>
+    <ul>
+      <li>Visao geral e tecnologias</li>
+      <li>Tipo de arquitetura e responsabilidades das camadas</li>
+      <li>Diagramas de fluxo, classes, comunicacao e modelo entidade-relacional</li>
+      <li>Regras de negocio e seguranca</li>
+      <li>Migrations, FluentValidation, logging e Swagger</li>
+      <li>CRUDs, endpoints, testes e execucao local</li>
+    </ul>
+  </section>
+
+  <h2>Visao Geral</h2>
+  <p>O backend expõe uma API REST para uma aplicacao escolar. Ele gerencia alunos, professores, integrantes da diretoria, usuarios autenticaveis e perfis de acesso.</p>
+  <div class="grid">
+    <div class="card"><strong>Framework</strong>ASP.NET Core 10 Web API.</div>
+    <div class="card"><strong>Persistencia</strong>Entity Framework Core com SQL Server e SQLite para desenvolvimento/testes.</div>
+    <div class="card"><strong>Seguranca</strong>JWT Bearer, roles e hash de senha PBKDF2-SHA256.</div>
+    <div class="card"><strong>Documentacao</strong>Swagger/OpenAPI com suporte a Bearer Token.</div>
+    <div class="card"><strong>Validacao</strong>FluentValidation registrado no pipeline MVC.</div>
+    <div class="card"><strong>Observabilidade</strong>Logs diarios em <code>Backend_API/logs</code>.</div>
+  </div>
+
+  <h2>Tipo de Arquitetura</h2>
+  <p>O projeto usa arquitetura em camadas. A camada HTTP conversa com services, os services executam regras de aplicacao e delegam persistencia ao repository ou ao DataContext. ViewModels isolam contratos externos das entidades EF Core.</p>
+  <div class="layer-map">
+    <div class="layer">
+      <h4>API</h4>
+      <p>Controllers, middlewares, autenticacao, autorizacao, Swagger e respostas HTTP.</p>
+    </div>
+    <div class="layer">
+      <h4>Aplicacao</h4>
+      <p>Services com regras de negocio, orquestracao e retorno de ViewModels.</p>
+    </div>
+    <div class="layer">
+      <h4>Infraestrutura</h4>
+      <p>Repository, DataContext, migrations, hashing, logging e acesso ao banco.</p>
+    </div>
+    <div class="layer">
+      <h4>Dominio/Dados</h4>
+      <p>Models, relacionamentos EF Core, seeds e constraints.</p>
+    </div>
+  </div>
+
+  <h2>Diagrama de Fluxo da Requisicao</h2>
+  <div class="diagram">
+    <div class="flow">
+      <span class="node">Cliente / SPA</span><span class="arrow">-></span>
+      <span class="node">HTTP</span><span class="arrow">-></span>
+      <span class="node">JWT</span><span class="arrow">-></span>
+      <span class="node">Roles</span><span class="arrow">-></span>
+      <span class="node">Controller</span><span class="arrow">-></span>
+      <span class="node">Validator</span><span class="arrow">-></span>
+      <span class="node">Service</span><span class="arrow">-></span>
+      <span class="node">Repository</span><span class="arrow">-></span>
+      <span class="node">EF Core</span><span class="arrow">-></span>
+      <span class="node">SQL Server</span>
+    </div>
+  </div>
+  <p>O retorno percorre o caminho inverso: banco, EF Core, repository, service, ViewModel, controller e resposta HTTP. O middleware de logs registra inicio, fim, status e tempo de execucao.</p>
+
+  <h2>Diagrama de Comunicacao Entre Camadas</h2>
+  <div class="diagram">
+    <div class="flow">
+      <span class="node">AlunoController</span><span class="arrow">-></span>
+      <span class="node">AlunoService</span><span class="arrow">-></span>
+      <span class="node">IRepository</span><span class="arrow">-></span>
+      <span class="node">DataContext</span><span class="arrow">-></span>
+      <span class="node">Banco</span>
+    </div>
+    <br />
+    <div class="flow">
+      <span class="node">UsuariosController</span><span class="arrow">-></span>
+      <span class="node">UsuarioService</span><span class="arrow">-></span>
+      <span class="node">DataContext</span><span class="arrow">-></span>
+      <span class="node">PasswordHasher</span>
+    </div>
+    <br />
+    <div class="flow">
+      <span class="node">AuthController</span><span class="arrow">-></span>
+      <span class="node">AuthService</span><span class="arrow">-></span>
+      <span class="node">JWT Claims</span><span class="arrow">-></span>
+      <span class="node">Bearer Token</span>
+    </div>
+    <br />
+    <div class="flow">
+      <span class="node">Pipeline</span><span class="arrow">-></span>
+      <span class="node">ILogger</span><span class="arrow">-></span>
+      <span class="node">DailyFileLogger</span><span class="arrow">-></span>
+      <span class="node">logs/*.log</span>
+    </div>
+  </div>
+
+  <h2>Diagrama de Classes</h2>
+  <div class="class-grid">
+    <div class="class-box"><h4>Perfil</h4><ul><li>IdPerfil</li><li>DescricaoPerfil</li><li>Usuarios</li></ul></div>
+    <div class="class-box"><h4>Usuario</h4><ul><li>IdUsuario</li><li>Nome</li><li>Email</li><li>Telefone</li><li>Senha</li><li>IdPerfil</li></ul></div>
+    <div class="class-box"><h4>Professor</h4><ul><li>Id</li><li>Nome</li><li>IdUsuario?</li><li>Alunos</li></ul></div>
+    <div class="class-box"><h4>Aluno</h4><ul><li>Id</li><li>Nome</li><li>Sobrenome</li><li>DataNasc</li><li>ProfessorId</li><li>IdUsuario?</li></ul></div>
+    <div class="class-box"><h4>Diretoria</h4><ul><li>Id</li><li>Nome</li><li>IdUsuario?</li></ul></div>
+    <div class="class-box"><h4>Services</h4><ul><li>AlunoService</li><li>ProfessorService</li><li>DiretoriaService</li><li>UsuarioService</li><li>AuthService</li></ul></div>
+  </div>
+  <p>Relacionamentos principais: <code>Perfil 1:N Usuario</code>, <code>Usuario 1:N Aluno</code>, <code>Usuario 1:N Professor</code>, <code>Usuario 1:N Diretoria</code> e <code>Professor 1:N Aluno</code>.</p>
+
+  <h2>Modelo Entidade-Relacional</h2>
+  <div class="entity-grid">
+    <div class="entity"><h4>PERFIL</h4><ul><li>IdPerfil PK</li><li>DescricaoPerfil</li></ul></div>
+    <div class="entity"><h4>USUARIO</h4><ul><li>IdUsuario PK</li><li>Nome</li><li>Email UK</li><li>Telefone</li><li>Senha</li><li>IdPerfil FK</li></ul></div>
+    <div class="entity"><h4>PROFESSOR</h4><ul><li>Id PK</li><li>Nome</li><li>IdUsuario FK opcional</li></ul></div>
+    <div class="entity"><h4>ALUNO</h4><ul><li>Id PK</li><li>Nome</li><li>Sobrenome</li><li>DataNasc</li><li>ProfessorId FK</li><li>IdUsuario FK opcional</li></ul></div>
+    <div class="entity"><h4>DIRETORIA</h4><ul><li>Id PK</li><li>Nome</li><li>IdUsuario FK opcional</li></ul></div>
+  </div>
+  <p>Ao excluir usuario, os vinculos opcionais em aluno, professor e diretoria sao configurados como nulos. O email de usuario possui indice unico.</p>
+
+  <h2>Regras de Negocio</h2>
+  <ul>
+    <li>Todo endpoint de negocio exige JWT valido.</li>
+    <li><span class="badge">Administrador</span> possui acesso total a CRUDs, usuarios e perfis.</li>
+    <li><span class="badge">Contribuinte</span> cria e atualiza alunos, professores e diretoria, mas nao exclui.</li>
+    <li><span class="badge">Leitor</span> consulta endpoints autenticados de leitura.</li>
+    <li>Usuarios novos recebem senha padrao <code>Senha@252525</code>.</li>
+    <li>Ao usar a senha padrao, a aplicacao sinaliza troca obrigatoria antes de liberar o fluxo normal.</li>
+    <li>Senha e armazenada apenas como hash PBKDF2-SHA256.</li>
+    <li>Aluno precisa de professor valido.</li>
+    <li>Aluno, professor e diretoria podem ou nao ter usuario vinculado.</li>
+    <li>Data de nascimento deve estar no formato <code>dd/MM/yyyy</code>.</li>
+  </ul>
+
+  <h2>Autenticacao e Autorizacao</h2>
+  <p>O endpoint <code>POST /api/Auth/login</code> valida email e senha, gera JWT com claims de usuario e perfil, e retorna a flag <code>deveAlterarSenhaPadrao</code>.</p>
+  <table>
+    <tr><th>Claim</th><th>Origem</th><th>Uso</th></tr>
+    <tr><td>sub/nameidentifier</td><td>IdUsuario</td><td>Identifica usuario atual.</td></tr>
+    <tr><td>email</td><td>Email</td><td>Identificacao e auditoria.</td></tr>
+    <tr><td>role</td><td>DescricaoPerfil</td><td>Autorizacao por roles.</td></tr>
+    <tr><td>id_perfil</td><td>IdPerfil</td><td>Contexto adicional de perfil.</td></tr>
+  </table>
+
+  <h2>Migrations</h2>
+  <table>
+    <tr><th>Migration</th><th>Responsabilidade</th></tr>
+    <tr><td>20260521160031_InitialSqlServer</td><td>Cria Professores e Alunos, FK Alunos.ProfessorId e seed inicial.</td></tr>
+    <tr><td>20260521194537_SeedFiftyRecords</td><td>Insere base ampla de exemplo para professores e alunos.</td></tr>
+    <tr><td>20260521202457_AddJwtAuthUsuariosDiretoria</td><td>Cria Perfil, Usuario, Diretoria, IdUsuario em Alunos/Professores, indices, seeds de perfis e 20 usuarios.</td></tr>
+  </table>
+  <p>A API aplica migrations automaticamente no startup. Para SQLite em desenvolvimento, usa <code>EnsureCreated</code>.</p>
+
+  <h2>FluentValidation</h2>
+  <p>Validators sao registrados no pipeline MVC. Eles impedem payloads invalidos antes que os services executem regras de aplicacao.</p>
+  <ul>
+    <li><code>AlunoCreateEditViewModelValidator</code>: nome, sobrenome, data, professor e usuario.</li>
+    <li><code>ProfessorCreateEditViewModelValidator</code>: nome e usuario vinculado.</li>
+    <li><code>DiretoriaCreateEditViewModelValidator</code>: nome e usuario vinculado.</li>
+    <li><code>UsuarioCreateViewModelValidator</code>: nome, email, telefone e perfil.</li>
+    <li><code>LoginRequestViewModelValidator</code>: email e senha.</li>
+    <li><code>AlterarSenhaViewModelValidator</code>: senha atual, nova senha forte e confirmacao.</li>
+  </ul>
+
+  <h2>Logging</h2>
+  <p>O projeto possui provider proprio de log em arquivo: <code>DailyFileLoggerProvider</code>. Ele grava arquivos diarios na pasta <code>Backend_API/logs</code>.</p>
+  <table>
+    <tr><th>Origem</th><th>Evento registrado</th></tr>
+    <tr><td>Startup</td><td>Ambiente, diretorio de logs e preparacao do banco.</td></tr>
+    <tr><td>Middleware</td><td>Metodo, rota, usuario, status HTTP e tempo de execucao.</td></tr>
+    <tr><td>Controllers</td><td>Excecoes capturadas em CRUDs e autenticacao.</td></tr>
+    <tr><td>AuthController</td><td>Login recusado, login aceito e alteracao de senha.</td></tr>
+  </table>
+  <p>O arquivo <code>Backend_API/logs/.gitkeep</code> versiona a pasta. Logs reais sao ignorados pelo Git.</p>
+
+  <h2>Swagger/OpenAPI</h2>
+  <p>Swagger e configurado em <code>Program.cs</code> com comentarios XML, titulo, versao, descricao e esquema de seguranca Bearer.</p>
+  <p>Fluxo recomendado: executar <code>POST /api/Auth/login</code>, copiar o token, clicar em Authorize e informar <code>Bearer {token}</code>.</p>
+
+  <h2>CRUD Completo</h2>
+  <table>
+    <tr><th>Entidade</th><th>Rotas</th><th>Autorizacao</th></tr>
+    <tr><td>Aluno</td><td>GET /api/Aluno, GET /api/Aluno/{id}, GET /api/Aluno/ByProfessor/{id}, POST, PUT, DELETE</td><td>Leitura autenticada; escrita Administrador/Contribuinte; exclusao Administrador.</td></tr>
+    <tr><td>Professor</td><td>GET /api/Professor, GET /api/Professor/{id}, POST, PUT, DELETE</td><td>Leitura autenticada; escrita Administrador/Contribuinte; exclusao Administrador.</td></tr>
+    <tr><td>Diretoria</td><td>GET /api/Diretoria, GET /api/Diretoria/{id}, POST, PUT, DELETE</td><td>Leitura autenticada; escrita Administrador/Contribuinte; exclusao Administrador.</td></tr>
+    <tr><td>Usuario</td><td>GET /api/usuarios, GET /api/usuarios/{id}, GET /api/usuarios/perfis, POST, PUT, DELETE</td><td>Consulta Administrador/Contribuinte; perfis e escrita apenas Administrador.</td></tr>
+    <tr><td>Auth</td><td>POST /api/Auth/login, GET /api/Auth/me, POST /api/Auth/alterar-senha, GET /api/Auth/autorizar</td><td>Login publico; demais autenticados ou Administrador.</td></tr>
+  </table>
+
+  <h2>Testes Unitarios</h2>
+  <p>Os testes ficam em <code>Backend_API/form_API.Tests</code> e usam xUnit, Moq, FluentValidation.TestHelper e SQLite em memoria.</p>
+  <ul>
+    <li>Controllers: validam respostas principais de Aluno e Usuario.</li>
+    <li>Services: validam criacao, hash de senha, login e troca de senha.</li>
+    <li>Validators: validam regras de entrada.</li>
+    <li>Seguranca: teste impede uso de APIs de SQL bruto.</li>
+  </ul>
+  <p>Comando: <code>dotnet test form_API.Tests/form_API.Tests.csproj</code>.</p>
+
+  <h2>Execucao Local</h2>
+  <table>
+    <tr><th>Acao</th><th>Comando</th></tr>
+    <tr><td>Rodar API</td><td><code>cd Backend_API && dotnet run</code></td></tr>
+    <tr><td>Testar</td><td><code>dotnet test form_API.Tests/form_API.Tests.csproj</code></td></tr>
+    <tr><td>Docker Compose</td><td><code>docker compose -f docker/docker-compose.yml up --build</code></td></tr>
+    <tr><td>Swagger</td><td><code>http://localhost:5000/swagger</code> no compose ou URL exibida pelo dotnet run.</td></tr>
+  </table>
+</body>
+</html>

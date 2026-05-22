@@ -11,15 +11,18 @@ Aplicacao escolar com backend ASP.NET Core e frontend Nuxt 3 em modo SPA.
 - Quando o usuario entra com a senha padrao, o sistema exige a troca antes de liberar as demais telas.
 - Tela de alteracao de senha com medidor de forca.
 - Backend com endpoint protegido `POST /api/Auth/alterar-senha`.
+- Backend com logs diarios em `Backend_API/logs`.
 - Protecao contra SQL injection por consultas LINQ/EF Core parametrizadas, validacao de entrada e teste automatizado contra uso de SQL bruto.
 - Workflow separado para CI/CD do frontend e publicacao estatica no GitHub Pages.
 
 ## Documentacao
 
 - Documentacao tecnica do backend: [docs/backend-tecnico.md](docs/backend-tecnico.md)
+- PDF tecnico do backend: [docs/backend-tecnico.pdf](docs/backend-tecnico.pdf)
+- README do backend: [Backend_API/README.md](Backend_API/README.md)
 - Documentacao do frontend: [docs/frontend-arquitetura.md](docs/frontend-arquitetura.md)
 - PDF do frontend: [docs/frontend-arquitetura.pdf](docs/frontend-arquitetura.pdf)
-- Swagger/OpenAPI da API: `http://localhost:8080/swagger` quando a API roda em container, ou a URL exibida por `dotnet run`.
+- Swagger/OpenAPI da API: `http://localhost:5000/swagger` no Docker Compose, `http://localhost:8080/swagger` no comando Docker manual abaixo, ou a URL exibida por `dotnet run`.
 
 ## Backend
 
@@ -38,6 +41,14 @@ dotnet build
 dotnet test form_API.Tests/form_API.Tests.csproj
 dotnet ef database update
 ```
+
+Logs:
+
+```text
+Backend_API/logs/backend-api-YYYYMMDD.log
+```
+
+Em Docker Compose, o volume `../Backend_API/logs:/app/logs` mantem os logs do container na pasta do projeto.
 
 Usuario inicial de seed:
 

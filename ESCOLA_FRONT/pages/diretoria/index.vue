@@ -208,7 +208,7 @@ const diretoriasFiltradas = computed(() => {
   return diretorias.value.filter((item) =>
     [item.nome, item.usuario?.nome, item.usuario?.descricaoPerfil]
       .filter(Boolean)
-      .some((value) => value.toLowerCase().includes(termo))
+      .some((value) => String(value).toLowerCase().includes(termo))
   )
 })
 const totalPaginas = computed(() => Math.max(1, Math.ceil(diretoriasFiltradas.value.length / porPagina)))

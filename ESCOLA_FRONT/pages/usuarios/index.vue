@@ -227,7 +227,7 @@ const usuariosFiltrados = computed(() => {
   return usuarios.value.filter((usuario) =>
     [usuario.nome, usuario.email, usuario.telefone, usuario.descricaoPerfil]
       .filter(Boolean)
-      .some((value) => value.toLowerCase().includes(termo))
+      .some((value) => String(value).toLowerCase().includes(termo))
   )
 })
 const totalPaginas = computed(() => Math.max(1, Math.ceil(usuariosFiltrados.value.length / porPagina)))

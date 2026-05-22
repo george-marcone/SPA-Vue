@@ -243,7 +243,7 @@ const alunosFiltrados = computed(() => {
       String(aluno.professorId)
     ]
       .filter(Boolean)
-      .some((value) => value.toLowerCase().includes(termo))
+      .some((value) => String(value).toLowerCase().includes(termo))
   )
 })
 const totalPaginas = computed(() => Math.max(1, Math.ceil(alunosFiltrados.value.length / porPagina)))

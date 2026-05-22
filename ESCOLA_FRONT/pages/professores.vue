@@ -208,7 +208,7 @@ const professoresFiltrados = computed(() => {
   return professores.value.filter((professor) =>
     [professor.nome, professor.usuario?.nome, String(professor.idUsuario ?? '')]
       .filter(Boolean)
-      .some((value) => value.toLowerCase().includes(termo))
+      .some((value) => String(value).toLowerCase().includes(termo))
   )
 })
 const totalPaginas = computed(() => Math.max(1, Math.ceil(professoresFiltrados.value.length / porPagina)))

@@ -13,7 +13,7 @@
         </NuxtLink>
         <button
           v-if="auth.canWrite && !editando"
-          class="rounded-md bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
+          class="rounded-md bg-[#147f72] px-4 py-2 text-sm font-bold text-white hover:bg-[#0f6c61]"
           type="button"
           @click="editando = true"
         >
@@ -72,7 +72,7 @@
         <button class="rounded-md border border-slate-200 px-4 py-2 text-sm font-bold hover:bg-slate-100" type="button" @click="cancelar">
           Cancelar
         </button>
-        <button class="rounded-md bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700" type="submit" :disabled="salvando">
+        <button class="rounded-md bg-[#147f72] px-4 py-2 text-sm font-bold text-white hover:bg-[#0f6c61]" type="submit" :disabled="salvando">
           {{ salvando ? 'Salvando...' : 'Salvar alteracoes' }}
         </button>
       </div>

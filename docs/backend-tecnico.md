@@ -12,6 +12,7 @@ O projeto usa:
 - FluentValidation para validacao de entradas.
 - JWT Bearer para autenticacao e autorizacao por perfil.
 - Swagger/OpenAPI para documentacao interativa.
+- Logging em arquivo diario na pasta `Backend_API/logs`.
 - xUnit e Moq para testes unitarios.
 
 ## Padrao arquitetural
@@ -29,6 +30,7 @@ Responsabilidades por camada:
 - `ViewModels`: representam payloads de entrada e saida da API.
 - `Security`: possui utilitarios de seguranca, como hash e verificacao de senha.
 - `Swagger`: possui filtros de documentacao OpenAPI, incluindo seguranca JWT por endpoint.
+- `Logging`: possui provider de log em arquivo diario e recebe eventos do pipeline, controllers e startup.
 
 ## Comunicacao entre camadas
 
@@ -44,6 +46,8 @@ flowchart TD
     Service --> Repository[Repository ou DataContext direto]
     Repository --> EF[Entity Framework Core]
     EF --> SQL[(SQL Server FormDB)]
+    Middleware --> Logs[(Backend_API/logs)]
+    Controller --> Logs
     SQL --> EF
     EF --> Repository
     Repository --> Service
@@ -197,6 +201,7 @@ flowchart LR
         R[Repository]
         C[DataContext]
         PH[PasswordHasher]
+        LG[DailyFileLogger]
     end
 
     subgraph DB[Banco]
@@ -210,6 +215,8 @@ flowchart LR
     AU --> ATS --> C
     US --> PH
     ATS --> PH
+    API --> LG
+    APP --> LG
 ```
 
 ## Modelo entidade-relacional
@@ -371,6 +378,46 @@ Adiciona a camada de autenticacao/autorizacao no banco:
 - Insere 3 perfis.
 - Insere 20 usuarios.
 - Vincula parte dos alunos e professores aos usuarios seedados.
+
+## Logging e auditoria
+
+O backend registra logs em arquivo sem depender de pacote externo. A configuracao fica em `Program.cs`, usando o provider `DailyFileLoggerProvider`.
+
+Destino dos arquivos:
+
+- Execucao local: `Backend_API/logs/backend-api-YYYYMMDD.log`.
+- Execucao em Docker Compose: `/app/logs` dentro do container, montado para `Backend_API/logs` no host.
+
+Eventos registrados:
+
+- Startup da API e ambiente atual.
+- Preparacao do banco de dados e aplicacao de migrations.
+- Inicio e fim de cada requisicao HTTP, com metodo, rota, usuario, status e tempo de execucao.
+- Falhas nao tratadas no pipeline HTTP.
+- Erros capturados nos controllers, com excecao completa.
+- Tentativas de login recusadas, login bem-sucedido e alteracao de senha.
+
+Politica de versionamento:
+
+- `Backend_API/logs/.gitkeep` mantem a pasta versionada.
+- `Backend_API/logs/*` e ignorado pelo Git para evitar commit de logs reais.
+
+## Regras de negocio
+
+Principais regras implementadas:
+
+- Todo endpoint de negocio exige usuario autenticado por JWT.
+- `Administrador` possui acesso completo, incluindo cadastro, edicao e exclusao.
+- `Contribuinte` pode cadastrar e atualizar alunos, professores e diretoria, mas nao excluir.
+- `Leitor` pode consultar endpoints autenticados de leitura.
+- Somente `Administrador` cria, atualiza, exclui usuarios e lista perfis.
+- Usuarios novos recebem senha inicial padrao `Senha@252525` e devem troca-la no primeiro acesso quando essa senha for usada.
+- Senhas nunca sao armazenadas em texto puro; sao persistidas como hash PBKDF2-SHA256.
+- Email de usuario e unico.
+- Aluno deve possuir professor valido.
+- `IdUsuario` em aluno, professor e diretoria e opcional, mas quando informado deve apontar para usuario valido.
+- Data de nascimento de aluno deve usar o formato `dd/MM/yyyy`.
+- Dados de entrada sao validados com FluentValidation antes de chegar as regras de persistencia.
 
 ## Swagger/OpenAPI
 

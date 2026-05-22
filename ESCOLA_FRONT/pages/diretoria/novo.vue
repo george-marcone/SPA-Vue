@@ -29,7 +29,7 @@
         <NuxtLink class="rounded-md border border-slate-200 px-4 py-2 text-sm font-bold no-underline hover:bg-slate-100" to="/diretoria">
           Cancelar
         </NuxtLink>
-        <button class="rounded-md bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700" type="submit" :disabled="salvando">
+        <button class="rounded-md bg-[#147f72] px-4 py-2 text-sm font-bold text-white hover:bg-[#0f6c61]" type="submit" :disabled="salvando">
           {{ salvando ? 'Salvando...' : 'Salvar integrante' }}
         </button>
       </div>

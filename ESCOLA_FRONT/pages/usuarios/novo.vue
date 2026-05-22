@@ -32,7 +32,7 @@
           </select>
         </label>
 
-        <div class="rounded-md border border-blue-100 bg-blue-50 p-4 text-sm font-semibold text-blue-900 md:col-span-2">
+        <div class="rounded-md border border-[#d7e8ff] bg-[#eff6ff] p-4 text-sm font-semibold text-[#24446d] md:col-span-2">
           A senha inicial sera definida automaticamente como <strong>Senha@252525</strong>.
         </div>
       </div>
@@ -43,7 +43,7 @@
         <NuxtLink class="rounded-md border border-slate-200 px-4 py-2 text-sm font-bold no-underline hover:bg-slate-100" to="/usuarios">
           Cancelar
         </NuxtLink>
-        <button class="rounded-md bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700" type="submit" :disabled="salvando">
+        <button class="rounded-md bg-[#147f72] px-4 py-2 text-sm font-bold text-white hover:bg-[#0f6c61]" type="submit" :disabled="salvando">
           {{ salvando ? 'Salvando...' : 'Salvar usuario' }}
         </button>
       </div>
