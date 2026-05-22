@@ -54,6 +54,7 @@
 <script setup lang="ts">
 import type { Perfil, UsuarioCreate, UsuarioSummary } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
+import { DUPLICATE_USER_EMAIL_MESSAGE, isDuplicateUserEmail } from '~/utils/usuario-validation'
 
 definePageMeta({
   roles: ['Administrador']
@@ -61,6 +62,7 @@ definePageMeta({
 
 const { $api } = useNuxtApp()
 const perfis = ref<Perfil[]>([])
+const usuarios = ref<UsuarioSummary[]>([])
 const salvando = ref(false)
 const erro = ref('')
 const form = reactive<UsuarioCreate>({
@@ -72,15 +74,26 @@ const form = reactive<UsuarioCreate>({
 
 onMounted(async () => {
   try {
-    perfis.value = await $api<Perfil[]>('/usuarios/perfis')
+    const [perfisResponse, usuariosResponse] = await Promise.all([
+      $api<Perfil[]>('/usuarios/perfis'),
+      $api<UsuarioSummary[]>('/usuarios')
+    ])
+    perfis.value = perfisResponse
+    usuarios.value = usuariosResponse
   } catch (err) {
     erro.value = normalizeApiError(err)
   }
 })
 
 async function salvar() {
-  salvando.value = true
   erro.value = ''
+
+  if (isDuplicateUserEmail(usuarios.value, form.email)) {
+    erro.value = DUPLICATE_USER_EMAIL_MESSAGE
+    return
+  }
+
+  salvando.value = true
 
   try {
     const created = await $api<UsuarioSummary>('/usuarios', {

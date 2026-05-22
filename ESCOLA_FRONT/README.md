@@ -210,6 +210,7 @@ Nao ha uma biblioteca externa dedicada a validacao de formularios, como Zod, Yup
 - Validacao nativa do HTML (`required`, `type`, `maxlength`).
 - Tipagem TypeScript para contratos de payload e resposta.
 - Utilitario proprio `utils/password-strength.ts` para avaliar forca da senha.
+- Utilitario proprio `utils/usuario-validation.ts` para impedir cadastro/edicao com e-mail ja usado por outro usuario.
 - `normalizeApiError` em `utils/api-client.ts` para exibir mensagens de erro da API, incluindo erros de validacao retornados no formato `{ errors: ... }`.
 
 Regras de forca de senha:

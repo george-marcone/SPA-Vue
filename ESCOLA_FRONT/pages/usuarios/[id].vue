@@ -76,6 +76,7 @@
 <script setup lang="ts">
 import type { Perfil, UsuarioSummary, UsuarioUpdate } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
+import { DUPLICATE_USER_EMAIL_MESSAGE, isDuplicateUserEmail } from '~/utils/usuario-validation'
 
 definePageMeta({
   roles: ['Administrador', 'Contribuinte']
@@ -86,6 +87,7 @@ const route = useRoute()
 const auth = useAuthStore()
 const usuario = ref<UsuarioSummary | null>(null)
 const perfis = ref<Perfil[]>([])
+const usuarios = ref<UsuarioSummary[]>([])
 const editando = ref(false)
 const salvando = ref(false)
 const erro = ref('')
@@ -104,7 +106,12 @@ onMounted(async () => {
 
   if (auth.isAdmin) {
     try {
-      perfis.value = await $api<Perfil[]>('/usuarios/perfis')
+      const [perfisResponse, usuariosResponse] = await Promise.all([
+        $api<Perfil[]>('/usuarios/perfis'),
+        $api<UsuarioSummary[]>('/usuarios')
+      ])
+      perfis.value = perfisResponse
+      usuarios.value = usuariosResponse
     } catch (err) {
       erro.value = normalizeApiError(err)
     }
@@ -138,9 +145,15 @@ function cancelar() {
 }
 
 async function salvar() {
-  salvando.value = true
   erro.value = ''
   mensagem.value = ''
+
+  if (isDuplicateUserEmail(usuarios.value, form.email, usuarioId.value)) {
+    erro.value = DUPLICATE_USER_EMAIL_MESSAGE
+    return
+  }
+
+  salvando.value = true
 
   try {
     usuario.value = await $api<UsuarioSummary>(`/usuarios/${usuarioId.value}`, {

@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
 import type { Perfil, UsuarioCreate, UsuarioSummary, UsuarioUpdate } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
+import { DUPLICATE_USER_EMAIL_MESSAGE, isDuplicateUserEmail } from '~/utils/usuario-validation'
 
 export const useUsuariosStore = defineStore('usuarios', () => {
   const usuarios = ref<UsuarioSummary[]>([])
@@ -37,6 +38,8 @@ export const useUsuariosStore = defineStore('usuarios', () => {
     error.value = null
 
     try {
+      validateUniqueEmail(payload.email)
+
       const { $api } = useNuxtApp()
       const created = await $api<UsuarioSummary>('/usuarios', {
         method: 'POST',
@@ -58,6 +61,8 @@ export const useUsuariosStore = defineStore('usuarios', () => {
     error.value = null
 
     try {
+      validateUniqueEmail(payload.email, idUsuario)
+
       const { $api } = useNuxtApp()
       const updated = await $api<UsuarioSummary>(`/usuarios/${idUsuario}`, {
         method: 'PUT',
@@ -93,6 +98,15 @@ export const useUsuariosStore = defineStore('usuarios', () => {
     } finally {
       loading.value = false
     }
+  }
+
+  function validateUniqueEmail(email: string, ignoredUsuarioId?: number | null) {
+    if (!isDuplicateUserEmail(usuarios.value, email, ignoredUsuarioId)) {
+      return
+    }
+
+    error.value = DUPLICATE_USER_EMAIL_MESSAGE
+    throw new Error(DUPLICATE_USER_EMAIL_MESSAGE)
   }
 
   return {

@@ -194,6 +194,7 @@
 import { ChevronLeft, ChevronRight, Eye, Pencil, Plus, RefreshCcw, Search, Trash2 } from '@lucide/vue'
 import type { Perfil, UsuarioCreate, UsuarioSummary } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
+import { DUPLICATE_USER_EMAIL_MESSAGE, isDuplicateUserEmail } from '~/utils/usuario-validation'
 
 definePageMeta({
   roles: ['Administrador', 'Contribuinte']
@@ -300,9 +301,15 @@ function limparForm() {
 }
 
 async function salvar() {
-  salvando.value = true
   erro.value = ''
   mensagem.value = ''
+
+  if (isDuplicateUserEmail(usuarios.value, form.email, editandoId.value)) {
+    erro.value = DUPLICATE_USER_EMAIL_MESSAGE
+    return
+  }
+
+  salvando.value = true
 
   try {
     if (editandoId.value) {
