@@ -443,10 +443,13 @@ Uso no Swagger UI:
 
 Configuracao JWT:
 
-- `Jwt:Key`: chave simetrica usada para assinar tokens.
+- `Jwt__Key`: chave simetrica usada para assinar tokens, definida por variavel de ambiente ou secret.
 - `Jwt:Issuer`: emissor esperado.
 - `Jwt:Audience`: audiencia esperada.
 - `Jwt:ExpirationMinutes`: tempo de expiracao.
+
+Em `Development`, quando `Jwt__Key` nao e informada, a API cria uma chave local em `Backend_API/.local/jwt.key`.
+Essa pasta e ignorada pelo Git. Em ambientes fora de desenvolvimento, a ausencia de `Jwt__Key` impede o startup.
 
 Claims emitidas:
 
@@ -639,28 +642,32 @@ dotnet run
 
 Banco em container usado no ambiente atual:
 
-```bash
+```powershell
+Copy-Item .env.example .env
 docker run -d --name form_api_db --network form_api_net --network-alias db -p 14333:1433 \
   -e ACCEPT_EULA=Y \
-  -e SA_PASSWORD=Your_password123 \
+  -e MSSQL_SA_PASSWORD="$env:MSSQL_SA_PASSWORD" \
   -e MSSQL_PID=Express \
   mcr.microsoft.com/mssql/server:2022-latest
 ```
 
 Aplicar migrations manualmente contra o container:
 
-```bash
+```powershell
 cd Backend_API
-ConnectionStrings__DefaultConnection="Server=localhost,14333;Database=FormDB;User Id=sa;Password=Your_password123;TrustServerCertificate=True;Encrypt=False" dotnet ef database update
+$env:ConnectionStrings__DefaultConnection="Server=localhost,14333;Database=FormDB;User Id=sa;Password=$env:MSSQL_SA_PASSWORD;TrustServerCertificate=True;Encrypt=False"
+$env:Jwt__Key=$env:JWT_KEY
+dotnet ef database update
 ```
 
 API em container:
 
-```bash
+```powershell
 docker build -t form-api:local Backend_API
 docker run -d --name form_api_app --network form_api_net -p 8080:80 \
   -e ASPNETCORE_ENVIRONMENT=Development \
-  -e ConnectionStrings__DefaultConnection="Server=db,1433;Database=FormDB;User Id=sa;Password=Your_password123;TrustServerCertificate=True;Encrypt=False" \
+  -e ConnectionStrings__DefaultConnection="Server=db,1433;Database=FormDB;User Id=sa;Password=$env:MSSQL_SA_PASSWORD;TrustServerCertificate=True;Encrypt=False" \
+  -e Jwt__Key="$env:JWT_KEY" \
   form-api:local
 ```
 
@@ -669,4 +676,4 @@ docker run -d --name form_api_app --network form_api_net -p 8080:80 \
 - Separar `UsuarioCreateViewModel` de `UsuarioUpdateViewModel` para contratos ainda mais especificos.
 - Adicionar testes para `DiretoriaService`, `ProfessorService` e autorizacao.
 - Criar controllers especificos de `Perfil` se a tabela deixar de ser apenas dominio fixo.
-- Mover segredos JWT e senha do banco para variaveis de ambiente em todos os ambientes.
+- Configurar rotacao de segredos no provedor de deploy e politicas de expiracao para chaves JWT.

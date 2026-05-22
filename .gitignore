@@ -10,6 +10,10 @@ ESCOLA_FRONT/dist
 
 
 # local env files
+.env
+.env.*
+!.env.example
+!*.env.example
 .env.local
 .env.*.local
 
@@ -32,5 +36,6 @@ pnpm-debug.log*
 bin
 obj
 Backend_API/form-dev.db*
+Backend_API/.local/
 Backend_API/logs/*
 !Backend_API/logs/.gitkeep

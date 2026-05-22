@@ -19,6 +19,7 @@ Aplicacao escolar com backend ASP.NET Core e frontend Nuxt 3 em modo SPA.
 
 - Documentacao tecnica do backend: [docs/backend-tecnico.md](docs/backend-tecnico.md)
 - PDF tecnico do backend: [docs/backend-tecnico.pdf](docs/backend-tecnico.pdf)
+- PDF tecnico completo do backend: [Backend_API/docs/documentacao-tecnica-backend.pdf](Backend_API/docs/documentacao-tecnica-backend.pdf)
 - README do backend: [Backend_API/README.md](Backend_API/README.md)
 - Documentacao do frontend: [docs/frontend-arquitetura.md](docs/frontend-arquitetura.md)
 - PDF do frontend: [docs/frontend-arquitetura.pdf](docs/frontend-arquitetura.pdf)
@@ -79,6 +80,8 @@ No Swagger, use `POST /api/Auth/login`, copie o token e clique em `Authorize` in
 ## Banco de dados
 
 O banco principal e SQL Server. A API aplica migrations automaticamente no startup.
+Segredos de banco e JWT nao ficam versionados: copie `.env.example` para `.env` e preencha os valores locais.
+O Docker Compose le o `.env` automaticamente; em comandos `docker run` manuais, carregue essas variaveis no terminal antes de executar.
 
 Tabelas principais:
 
@@ -90,30 +93,33 @@ Tabelas principais:
 
 Container usado no ambiente local atual:
 
-```bash
+```powershell
+Copy-Item .env.example .env
 docker network create form_api_net
 docker run -d --name form_api_db --network form_api_net --network-alias db -p 14333:1433 \
   -e ACCEPT_EULA=Y \
-  -e SA_PASSWORD=Your_password123 \
+  -e MSSQL_SA_PASSWORD="$env:MSSQL_SA_PASSWORD" \
   -e MSSQL_PID=Express \
   mcr.microsoft.com/mssql/server:2022-latest
 ```
 
 Aplicar migrations manualmente:
 
-```bash
+```powershell
 cd Backend_API
-$env:ConnectionStrings__DefaultConnection='Server=localhost,14333;Database=FormDB;User Id=sa;Password=Your_password123;TrustServerCertificate=True;Encrypt=False'
+$env:ConnectionStrings__DefaultConnection="Server=localhost,14333;Database=FormDB;User Id=sa;Password=$env:MSSQL_SA_PASSWORD;TrustServerCertificate=True;Encrypt=False"
+$env:Jwt__Key=$env:JWT_KEY
 dotnet ef database update
 ```
 
 ## Docker da API
 
-```bash
+```powershell
 docker build -t form-api:local Backend_API
 docker run -d --name form_api_app --network form_api_net -p 8080:80 \
   -e ASPNETCORE_ENVIRONMENT=Development \
-  -e ConnectionStrings__DefaultConnection="Server=db,1433;Database=FormDB;User Id=sa;Password=Your_password123;TrustServerCertificate=True;Encrypt=False" \
+  -e ConnectionStrings__DefaultConnection="Server=db,1433;Database=FormDB;User Id=sa;Password=$env:MSSQL_SA_PASSWORD;TrustServerCertificate=True;Encrypt=False" \
+  -e Jwt__Key="$env:JWT_KEY" \
   form-api:local
 ```
 
