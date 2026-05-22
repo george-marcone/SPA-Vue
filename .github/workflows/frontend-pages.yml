@@ -4,12 +4,12 @@ on:
   push:
     branches: [ main, master ]
     paths:
-      - 'project_form/**'
+      - 'ESCOLA_FRONT/**'
       - '.github/workflows/frontend-pages.yml'
   pull_request:
     branches: [ main, master ]
     paths:
-      - 'project_form/**'
+      - 'ESCOLA_FRONT/**'
       - '.github/workflows/frontend-pages.yml'
   workflow_dispatch:
 
@@ -32,19 +32,19 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: project_form/package-lock.json
+          cache-dependency-path: ESCOLA_FRONT/package-lock.json
 
       - name: Install dependencies
         run: npm ci
-        working-directory: project_form
+        working-directory: ESCOLA_FRONT
 
       - name: Run unit tests
         run: npm test
-        working-directory: project_form
+        working-directory: ESCOLA_FRONT
 
       - name: Generate static app
         run: npm run generate
-        working-directory: project_form
+        working-directory: ESCOLA_FRONT
         env:
           NUXT_APP_BASE_URL: ${{ format('/{0}/', github.event.repository.name) }}
           NUXT_PUBLIC_API_BASE: ${{ vars.NUXT_PUBLIC_API_BASE || secrets.NUXT_PUBLIC_API_BASE || 'http://localhost:5001/api' }}
@@ -53,7 +53,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: project_form/.output/public
+          path: ESCOLA_FRONT/.output/public
 
   deploy-pages:
     name: Deploy frontend to GitHub Pages

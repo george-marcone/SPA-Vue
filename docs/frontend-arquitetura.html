@@ -114,7 +114,7 @@
   <p class="meta">Projeto SPA-Vue - documento gerado em 21/05/2026</p>
 
   <h2>Visao geral</h2>
-  <p>O frontend fica em <code>project_form</code> e foi preparado como uma SPA em Nuxt 3. O Nuxt usa Vite no ambiente de desenvolvimento e no build, Pinia para estado global e Vitest para testes unitarios.</p>
+  <p>O frontend fica em <code>ESCOLA_FRONT</code> e foi preparado como uma SPA em Nuxt 3. O Nuxt usa Vite no ambiente de desenvolvimento e no build, Pinia para estado global e Vitest para testes unitarios.</p>
   <p>A aplicacao conversa com o backend <code>Backend_API</code> por HTTP usando JWT. O token recebido no login e salvo pelo store de autenticacao e enviado nas proximas requisicoes pelo plugin de API.</p>
 
   <div class="grid">
@@ -190,7 +190,7 @@
   <p>Para prevenir regressao, existe um teste automatizado em <code>Backend_API/form_API.Tests/Security/SqlInjectionProtectionTests.cs</code>. Esse teste falha se APIs de SQL bruto forem introduzidas no codigo da aplicacao, como <code>FromSqlRaw</code>, <code>ExecuteSqlRaw</code> ou <code>SqlQueryRaw</code>.</p>
 
   <h2>Testes</h2>
-  <pre>cd project_form
+  <pre>cd ESCOLA_FRONT
 npm test</pre>
   <pre>cd Backend_API
 dotnet test form_API.Tests/form_API.Tests.csproj</pre>
@@ -207,16 +207,16 @@ dotnet test form_API.Tests/form_API.Tests.csproj</pre>
     <li>upload do artefato estatico;</li>
     <li>deploy no GitHub Pages quando nao for pull request.</li>
   </ol>
-  <p>Como o frontend esta em uma subpasta do mesmo repositorio, o job usa <code>working-directory: project_form</code>.</p>
+  <p>Como o frontend esta em uma subpasta do mesmo repositorio, o job usa <code>working-directory: ESCOLA_FRONT</code>.</p>
   <p>Para GitHub Pages, <code>NUXT_APP_BASE_URL</code> e definido como <code>/{nome-do-repositorio}/</code>. A URL da API deve ser configurada em <code>NUXT_PUBLIC_API_BASE</code> nas variaveis ou secrets do repositorio.</p>
 
   <h2>Como rodar localmente</h2>
   <pre>cd Backend_API
 dotnet run</pre>
-  <pre>cd project_form
+  <pre>cd ESCOLA_FRONT
 npm ci
 $env:NUXT_PUBLIC_API_BASE='http://localhost:5001/api'
 npm run dev</pre>
-  <p>Para gerar a versao estatica, execute <code>npm run generate</code> dentro de <code>project_form</code>.</p>
+  <p>Para gerar a versao estatica, execute <code>npm run generate</code> dentro de <code>ESCOLA_FRONT</code>.</p>
 </body>
 </html>

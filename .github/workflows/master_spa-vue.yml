@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - 'project_form/**'
+      - 'ESCOLA_FRONT/**'
       - '.github/workflows/master_spa-vue.yml'
   workflow_dispatch:
 
@@ -23,25 +23,25 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: project_form/package-lock.json
+          cache-dependency-path: ESCOLA_FRONT/package-lock.json
 
       - name: Install frontend dependencies
         run: npm ci
-        working-directory: project_form
+        working-directory: ESCOLA_FRONT
 
       - name: Run unit tests
         run: npm test
-        working-directory: project_form
+        working-directory: ESCOLA_FRONT
 
       - name: Generate static Nuxt app
         run: npm run generate
-        working-directory: project_form
+        working-directory: ESCOLA_FRONT
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: nuxt-static-app
-          path: project_form/.output/public
+          path: ESCOLA_FRONT/.output/public
 
   deploy:
     runs-on: ubuntu-latest

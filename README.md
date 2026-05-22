@@ -4,7 +4,7 @@ Aplicacao escolar com backend ASP.NET Core e frontend Nuxt 3 em modo SPA.
 
 ## Atualizacoes recentes
 
-- Frontend em `project_form` usando Nuxt 3, Vite, Pinia e Vitest.
+- Frontend em `ESCOLA_FRONT` usando Nuxt 3, Vite, Pinia e Vitest.
 - Login com JWT, sessao persistida no Pinia e middleware de rota autenticada.
 - Cadastro de usuarios sem campo de senha.
 - Novos usuarios recebem a senha inicial padrao `Senha@252525`.
@@ -115,7 +115,7 @@ Acessos:
 ## Frontend
 
 ```bash
-cd project_form
+cd ESCOLA_FRONT
 npm ci
 npm run dev
 ```

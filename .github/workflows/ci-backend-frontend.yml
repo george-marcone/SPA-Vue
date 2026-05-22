@@ -5,13 +5,13 @@ on:
     branches: [ main, master ]
     paths:
       - 'Backend_API/**'
-      - 'project_form/**'
+      - 'ESCOLA_FRONT/**'
       - '.github/workflows/**'
   pull_request:
     branches: [ main, master ]
     paths:
       - 'Backend_API/**'
-      - 'project_form/**'
+      - 'ESCOLA_FRONT/**'
       - '.github/workflows/**'
   workflow_dispatch:
 
@@ -47,16 +47,16 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm ci
-        working-directory: project_form
+        working-directory: ESCOLA_FRONT
 
       - name: Build frontend
         run: npm run build
-        working-directory: project_form
+        working-directory: ESCOLA_FRONT
 
       - name: Generate static frontend
         run: npm run generate
-        working-directory: project_form
+        working-directory: ESCOLA_FRONT
 
       - name: Run frontend tests
         run: npm test
-        working-directory: project_form
+        working-directory: ESCOLA_FRONT

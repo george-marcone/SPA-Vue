@@ -3,10 +3,10 @@ node_modules
 /dist
 .nuxt
 .output
-project_form/.nuxt
-project_form/.output
-project_form/.nuxtrc
-project_form/dist
+ESCOLA_FRONT/.nuxt
+ESCOLA_FRONT/.output
+ESCOLA_FRONT/.nuxtrc
+ESCOLA_FRONT/dist
 
 
 # local env files

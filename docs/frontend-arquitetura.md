@@ -4,7 +4,7 @@ Data: 21/05/2026
 
 ## Visao geral
 
-O frontend fica em `project_form` e foi preparado como uma SPA em Nuxt 3. O Nuxt usa Vite no ambiente de desenvolvimento e no build, Pinia para estado global e Vitest para testes unitarios.
+O frontend fica em `ESCOLA_FRONT` e foi preparado como uma SPA em Nuxt 3. O Nuxt usa Vite no ambiente de desenvolvimento e no build, Pinia para estado global e Vitest para testes unitarios.
 
 A aplicacao conversa com o backend `Backend_API` por HTTP usando JWT. O token recebido no login e salvo pelo store de autenticacao e enviado nas proximas requisicoes pelo plugin de API.
 
@@ -120,7 +120,7 @@ Para prevenir regressao, existe um teste automatizado em `Backend_API/form_API.T
 Frontend:
 
 ```bash
-cd project_form
+cd ESCOLA_FRONT
 npm test
 ```
 
@@ -152,7 +152,7 @@ O workflow `.github/workflows/frontend-pages.yml` executa um job especifico para
 6. upload do artefato estatico;
 7. deploy no GitHub Pages quando nao for pull request.
 
-Como o frontend esta em uma subpasta do mesmo repositorio, o job usa `working-directory: project_form`.
+Como o frontend esta em uma subpasta do mesmo repositorio, o job usa `working-directory: ESCOLA_FRONT`.
 
 Para GitHub Pages, `NUXT_APP_BASE_URL` e definido como `/{nome-do-repositorio}/`. A URL da API deve ser configurada em `NUXT_PUBLIC_API_BASE` nas variaveis ou secrets do repositorio.
 
@@ -168,7 +168,7 @@ dotnet run
 Frontend:
 
 ```bash
-cd project_form
+cd ESCOLA_FRONT
 npm ci
 $env:NUXT_PUBLIC_API_BASE='http://localhost:5001/api'
 npm run dev
@@ -177,6 +177,6 @@ npm run dev
 Para gerar a versao estatica:
 
 ```bash
-cd project_form
+cd ESCOLA_FRONT
 npm run generate
 ```
