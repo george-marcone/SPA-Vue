@@ -2,7 +2,8 @@
   <section class="login-panel">
     <div>
       <p class="eyebrow">Acesso seguro</p>
-      <h1>Form Escola</h1>
+      <h1>Escola High Tech</h1>
+      <p class="mt-2 text-sm font-bold text-teal-700">GM Tech Solutions</p>
     </div>
 
     <form v-if="!mostrarAlteracaoSenha" class="form-grid" @submit.prevent="entrar">

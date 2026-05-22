@@ -1,12 +1,12 @@
 <template>
-  <section class="stack">
-    <div class="page-heading">
+  <section class="grid gap-6">
+    <div>
       <p class="eyebrow">Usuarios</p>
-      <h1>Novo usuario</h1>
+      <h1 class="m-0 text-3xl font-extrabold text-slate-900">Novo usuario</h1>
     </div>
 
-    <form class="form-panel" @submit.prevent="salvar">
-      <div class="form-grid two-columns">
+    <form class="grid gap-5 rounded-lg border border-slate-200 bg-white p-5" @submit.prevent="salvar">
+      <div class="grid gap-4 md:grid-cols-2">
         <label>
           <span>Nome</span>
           <input v-model.trim="form.nome" type="text" required maxlength="100" />
@@ -26,24 +26,25 @@
           <span>Perfil</span>
           <select v-model.number="form.idPerfil" required>
             <option disabled :value="0">Selecione</option>
-            <option v-for="perfil in usuarios.perfis" :key="perfil.idPerfil" :value="perfil.idPerfil">
+            <option v-for="perfil in perfis" :key="perfil.idPerfil" :value="perfil.idPerfil">
               {{ perfil.descricaoPerfil }}
             </option>
           </select>
         </label>
 
-        <div class="inline-note">
+        <div class="rounded-md border border-blue-100 bg-blue-50 p-4 text-sm font-semibold text-blue-900 md:col-span-2">
           A senha inicial sera definida automaticamente como <strong>Senha@252525</strong>.
         </div>
       </div>
 
-      <p v-if="mensagem" class="alert alert-success">{{ mensagem }}</p>
       <p v-if="erro" class="alert alert-error">{{ erro }}</p>
 
-      <div class="form-actions">
-        <NuxtLink class="btn btn-secondary" to="/">Cancelar</NuxtLink>
-        <button class="btn btn-primary" type="submit" :disabled="usuarios.loading">
-          {{ usuarios.loading ? 'Salvando...' : 'Salvar usuario' }}
+      <div class="flex flex-wrap justify-end gap-2">
+        <NuxtLink class="rounded-md border border-slate-200 px-4 py-2 text-sm font-bold no-underline hover:bg-slate-100" to="/usuarios">
+          Cancelar
+        </NuxtLink>
+        <button class="rounded-md bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700" type="submit" :disabled="salvando">
+          {{ salvando ? 'Salvando...' : 'Salvar usuario' }}
         </button>
       </div>
     </form>
@@ -51,41 +52,46 @@
 </template>
 
 <script setup lang="ts">
+import type { Perfil, UsuarioCreate, UsuarioSummary } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
 
 definePageMeta({
   roles: ['Administrador']
 })
 
-const usuarios = useUsuariosStore()
-const mensagem = ref('')
+const { $api } = useNuxtApp()
+const perfis = ref<Perfil[]>([])
+const salvando = ref(false)
 const erro = ref('')
-const form = reactive({
+const form = reactive<UsuarioCreate>({
   nome: '',
   email: '',
   telefone: '',
   idPerfil: 0
 })
 
-onMounted(() => {
-  usuarios.fetchPerfis().catch((err) => {
+onMounted(async () => {
+  try {
+    perfis.value = await $api<Perfil[]>('/usuarios/perfis')
+  } catch (err) {
     erro.value = normalizeApiError(err)
-  })
+  }
 })
 
 async function salvar() {
-  mensagem.value = ''
+  salvando.value = true
   erro.value = ''
 
   try {
-    const created = await usuarios.createUsuario({ ...form })
-    mensagem.value = `Usuario ${created.nome} cadastrado com senha padrao.`
-    form.nome = ''
-    form.email = ''
-    form.telefone = ''
-    form.idPerfil = 0
+    const created = await $api<UsuarioSummary>('/usuarios', {
+      method: 'POST',
+      body: { ...form }
+    })
+    await navigateTo(`/usuarios/${created.idUsuario}`)
   } catch (err) {
     erro.value = normalizeApiError(err)
+  } finally {
+    salvando.value = false
   }
 }
 </script>

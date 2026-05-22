@@ -1,13 +1,13 @@
 <template>
   <section class="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
     <form
-      v-if="auth.canWrite"
+      v-if="auth.isAdmin"
       class="rounded-lg border border-[#d4dee9] bg-white p-6 shadow-[0_22px_55px_rgba(14,30,53,0.08)]"
       @submit.prevent="salvar"
     >
       <p class="m-0 text-xs font-extrabold uppercase text-[#d64200]">Cadastro</p>
       <h2 class="mb-8 mt-2 text-xl font-normal text-[#071d3b]">
-        {{ editandoId ? 'Editar integrante' : 'Novo integrante' }}
+        {{ editandoId ? 'Editar usuario' : 'Novo usuario' }}
       </h2>
 
       <div class="grid gap-5">
@@ -18,14 +18,30 @@
         </label>
 
         <label class="grid gap-2 text-sm font-extrabold text-[#071d3b]">
-          <span>Usuario vinculado</span>
-          <select v-model="idUsuario" class="min-h-11 rounded-md border border-[#ccd8e5] px-3 text-[#071d3b] outline-none focus:border-[#147f72] focus:ring-4 focus:ring-[#147f72]/10">
-            <option value="">Sem vinculo</option>
-            <option v-for="usuario in usuarios" :key="usuario.idUsuario" :value="usuario.idUsuario">
-              {{ usuario.nome }} - {{ usuario.descricaoPerfil }}
+          <span>E-mail</span>
+          <input v-model.trim="form.email" class="min-h-11 rounded-md border border-[#ccd8e5] px-3 text-[#071d3b] outline-none focus:border-[#147f72] focus:ring-4 focus:ring-[#147f72]/10" type="email" required maxlength="150" />
+          <span class="text-xs font-extrabold text-[#62728a]">{{ form.email.length }}/150</span>
+        </label>
+
+        <label class="grid gap-2 text-sm font-extrabold text-[#071d3b]">
+          <span>Telefone</span>
+          <input v-model.trim="form.telefone" class="min-h-11 rounded-md border border-[#ccd8e5] px-3 text-[#071d3b] outline-none focus:border-[#147f72] focus:ring-4 focus:ring-[#147f72]/10" type="tel" required maxlength="20" placeholder="+55 (11) 99999-9999" />
+          <span class="text-xs font-extrabold text-[#62728a]">{{ form.telefone.length }}/20</span>
+        </label>
+
+        <label class="grid gap-2 text-sm font-extrabold text-[#071d3b]">
+          <span>Perfil</span>
+          <select v-model.number="form.idPerfil" class="min-h-11 rounded-md border border-[#ccd8e5] px-3 text-[#071d3b] outline-none focus:border-[#147f72] focus:ring-4 focus:ring-[#147f72]/10" required>
+            <option disabled :value="0">Selecione</option>
+            <option v-for="perfil in perfis" :key="perfil.idPerfil" :value="perfil.idPerfil">
+              {{ perfil.descricaoPerfil }}
             </option>
           </select>
         </label>
+
+        <p class="m-0 rounded-md border border-[#d7e8ff] bg-[#eff6ff] p-3 text-sm font-semibold text-[#24446d]">
+          A senha inicial sera definida automaticamente como <strong>Senha@252525</strong>.
+        </p>
 
         <p v-if="mensagem" class="alert alert-success">{{ mensagem }}</p>
         <p v-if="erro" class="alert alert-error">{{ erro }}</p>
@@ -37,7 +53,7 @@
             :disabled="salvando"
           >
             <Plus class="h-5 w-5" aria-hidden="true" />
-            {{ salvando ? 'Salvando...' : editandoId ? 'Atualizar integrante' : 'Cadastrar integrante' }}
+            {{ salvando ? 'Salvando...' : editandoId ? 'Atualizar usuario' : 'Cadastrar usuario' }}
           </button>
           <button
             v-if="editandoId"
@@ -56,17 +72,17 @@
       class="rounded-lg border border-[#d4dee9] bg-white p-6 shadow-[0_22px_55px_rgba(14,30,53,0.08)]"
     >
       <p class="m-0 text-xs font-extrabold uppercase text-[#d64200]">Consulta</p>
-      <h2 class="mb-3 mt-2 text-xl font-normal text-[#071d3b]">Diretoria</h2>
+      <h2 class="mb-3 mt-2 text-xl font-normal text-[#071d3b]">Usuarios</h2>
       <p class="m-0 text-sm font-semibold text-[#62728a]">
-        Seu perfil permite consultar a diretoria cadastrada.
+        Seu perfil permite consultar os usuarios cadastrados.
       </p>
     </aside>
 
     <article class="min-w-0 rounded-lg border border-[#d4dee9] bg-white p-6 shadow-[0_22px_55px_rgba(14,30,53,0.08)]">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <p class="m-0 text-xs font-extrabold uppercase text-[#d64200]">{{ diretorias.length }} integrante(s)</p>
-          <h2 class="m-0 mt-2 text-xl font-normal text-[#071d3b]">Diretoria</h2>
+          <p class="m-0 text-xs font-extrabold uppercase text-[#d64200]">{{ usuarios.length }} usuario(s)</p>
+          <h2 class="m-0 mt-2 text-xl font-normal text-[#071d3b]">Usuarios</h2>
         </div>
         <button
           class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[#edf3f8] text-[#071d3b] transition hover:bg-[#dfe8f1]"
@@ -81,43 +97,45 @@
 
       <div class="relative mt-5">
         <Search class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#62728a]" aria-hidden="true" />
-        <input v-model.trim="busca" class="min-h-11 rounded-md border border-[#ccd8e5] pl-12 pr-3 text-[#071d3b] outline-none focus:border-[#147f72] focus:ring-4 focus:ring-[#147f72]/10" type="search" placeholder="Consultar integrante" />
+        <input v-model.trim="busca" class="min-h-11 rounded-md border border-[#ccd8e5] pl-12 pr-3 text-[#071d3b] outline-none focus:border-[#147f72] focus:ring-4 focus:ring-[#147f72]/10" type="search" placeholder="Consultar usuario" />
       </div>
 
       <p v-if="erroLista" class="alert alert-error mt-4">{{ erroLista }}</p>
 
       <div class="mt-4 max-h-[520px] overflow-auto rounded-lg border border-[#d4dee9]">
-        <table class="min-w-[760px] border-collapse text-left">
+        <table class="min-w-[820px] border-collapse text-left">
           <thead class="sticky top-0 bg-[#f5f8fb] text-xs uppercase text-[#51627a]">
             <tr>
               <th class="px-4 py-4">Nome</th>
-              <th class="px-4 py-4">Usuario vinculado</th>
+              <th class="px-4 py-4">E-mail</th>
+              <th class="px-4 py-4">Telefone</th>
               <th class="px-4 py-4">Perfil</th>
               <th class="px-4 py-4 text-center">Acoes</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in diretoriasPaginadas" :key="item.id" class="border-t border-[#d4dee9]">
-              <td class="px-4 py-4 font-semibold text-[#243044]">{{ item.nome }}</td>
-              <td class="px-4 py-4 text-[#243044]">{{ item.usuario?.nome || '-' }}</td>
-              <td class="px-4 py-4 text-[#243044]">{{ item.usuario?.descricaoPerfil || '-' }}</td>
+            <tr v-for="usuario in usuariosPaginados" :key="usuario.idUsuario" class="border-t border-[#d4dee9]">
+              <td class="px-4 py-4 font-semibold text-[#243044]">{{ usuario.nome }}</td>
+              <td class="px-4 py-4 text-[#243044]">{{ usuario.email }}</td>
+              <td class="px-4 py-4 text-[#243044]">{{ usuario.telefone || '-' }}</td>
+              <td class="px-4 py-4 text-[#243044]">{{ usuario.descricaoPerfil }}</td>
               <td class="px-4 py-4">
                 <div class="flex justify-center gap-2">
                   <NuxtLink
                     class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[#edf3f8] text-[#071d3b] no-underline transition hover:bg-[#dfe8f1]"
-                    :to="`/diretoria/${item.id}`"
-                    title="Visualizar integrante"
-                    aria-label="Visualizar integrante"
+                    :to="`/usuarios/${usuario.idUsuario}`"
+                    title="Visualizar usuario"
+                    aria-label="Visualizar usuario"
                   >
                     <Eye class="h-5 w-5" aria-hidden="true" />
                   </NuxtLink>
                   <button
-                    v-if="auth.canWrite"
+                    v-if="auth.isAdmin"
                     class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[#edf3f8] text-[#071d3b] transition hover:bg-[#dfe8f1]"
                     type="button"
-                    title="Editar integrante"
-                    aria-label="Editar integrante"
-                    @click="editar(item)"
+                    title="Editar usuario"
+                    aria-label="Editar usuario"
+                    @click="editar(usuario)"
                   >
                     <Pencil class="h-5 w-5" aria-hidden="true" />
                   </button>
@@ -125,20 +143,20 @@
                     v-if="auth.isAdmin"
                     class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[#ffe1e3] text-[#dc2626] transition hover:bg-[#ffd4d7]"
                     type="button"
-                    title="Excluir integrante"
-                    aria-label="Excluir integrante"
-                    @click="excluir(item)"
+                    title="Excluir usuario"
+                    aria-label="Excluir usuario"
+                    @click="excluir(usuario)"
                   >
                     <Trash2 class="h-5 w-5" aria-hidden="true" />
                   </button>
                 </div>
               </td>
             </tr>
-            <tr v-if="!carregando && !diretoriasFiltradas.length">
-              <td class="px-4 py-6 text-[#62728a]" colspan="4">Nenhum registro encontrado.</td>
+            <tr v-if="!carregando && !usuariosFiltrados.length">
+              <td class="px-4 py-6 text-[#62728a]" colspan="5">Nenhum usuario encontrado.</td>
             </tr>
-            <tr v-if="carregando && !diretorias.length">
-              <td class="px-4 py-6 text-[#62728a]" colspan="4">Carregando diretoria...</td>
+            <tr v-if="carregando && !usuarios.length">
+              <td class="px-4 py-6 text-[#62728a]" colspan="5">Carregando usuarios...</td>
             </tr>
           </tbody>
         </table>
@@ -174,7 +192,7 @@
 
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight, Eye, Pencil, Plus, RefreshCcw, Search, Trash2 } from '@lucide/vue'
-import type { Diretoria, DiretoriaCreate, UsuarioSummary } from '~/types/api'
+import type { Perfil, UsuarioCreate, UsuarioSummary } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
 
 definePageMeta({
@@ -183,8 +201,8 @@ definePageMeta({
 
 const { $api } = useNuxtApp()
 const auth = useAuthStore()
-const diretorias = ref<Diretoria[]>([])
 const usuarios = ref<UsuarioSummary[]>([])
+const perfis = ref<Perfil[]>([])
 const carregando = ref(false)
 const salvando = ref(false)
 const erro = ref('')
@@ -194,36 +212,37 @@ const busca = ref('')
 const pagina = ref(1)
 const porPagina = 10
 const editandoId = ref<number | null>(null)
-const idUsuario = ref<number | ''>('')
-const form = reactive<DiretoriaCreate>({
+const form = reactive<UsuarioCreate>({
   nome: '',
-  idUsuario: null
+  email: '',
+  telefone: '',
+  idPerfil: 0
 })
 
-const diretoriasFiltradas = computed(() => {
+const usuariosFiltrados = computed(() => {
   const termo = busca.value.toLowerCase()
 
-  if (!termo) return diretorias.value
+  if (!termo) return usuarios.value
 
-  return diretorias.value.filter((item) =>
-    [item.nome, item.usuario?.nome, item.usuario?.descricaoPerfil]
+  return usuarios.value.filter((usuario) =>
+    [usuario.nome, usuario.email, usuario.telefone, usuario.descricaoPerfil]
       .filter(Boolean)
       .some((value) => value.toLowerCase().includes(termo))
   )
 })
-const totalPaginas = computed(() => Math.max(1, Math.ceil(diretoriasFiltradas.value.length / porPagina)))
-const diretoriasPaginadas = computed(() => {
+const totalPaginas = computed(() => Math.max(1, Math.ceil(usuariosFiltrados.value.length / porPagina)))
+const usuariosPaginados = computed(() => {
   const inicio = (pagina.value - 1) * porPagina
 
-  return diretoriasFiltradas.value.slice(inicio, inicio + porPagina)
+  return usuariosFiltrados.value.slice(inicio, inicio + porPagina)
 })
 const intervaloTexto = computed(() => {
-  if (!diretoriasFiltradas.value.length) return '0 integrante(s)'
+  if (!usuariosFiltrados.value.length) return '0 usuario(s)'
 
   const inicio = (pagina.value - 1) * porPagina + 1
-  const fim = Math.min(pagina.value * porPagina, diretoriasFiltradas.value.length)
+  const fim = Math.min(pagina.value * porPagina, usuariosFiltrados.value.length)
 
-  return `${inicio}-${fim} de ${diretoriasFiltradas.value.length} integrante(s)`
+  return `${inicio}-${fim} de ${usuariosFiltrados.value.length} usuario(s)`
 })
 
 watch(busca, () => {
@@ -234,7 +253,11 @@ watch(totalPaginas, (total) => {
 })
 
 onMounted(async () => {
-  await Promise.all([carregar(), carregarUsuarios()])
+  await carregar()
+
+  if (auth.isAdmin) {
+    await carregarPerfis()
+  }
 })
 
 async function carregar() {
@@ -242,7 +265,7 @@ async function carregar() {
   erroLista.value = ''
 
   try {
-    diretorias.value = await $api<Diretoria[]>('/diretoria')
+    usuarios.value = await $api<UsuarioSummary[]>('/usuarios')
   } catch (err) {
     erroLista.value = normalizeApiError(err)
   } finally {
@@ -250,21 +273,20 @@ async function carregar() {
   }
 }
 
-async function carregarUsuarios() {
-  if (!auth.canWrite) return
-
+async function carregarPerfis() {
   try {
-    usuarios.value = await $api<UsuarioSummary[]>('/usuarios')
+    perfis.value = await $api<Perfil[]>('/usuarios/perfis')
   } catch (err) {
     erro.value = normalizeApiError(err)
   }
 }
 
-function editar(item: Diretoria) {
-  editandoId.value = item.id
-  form.nome = item.nome
-  form.idUsuario = item.idUsuario ?? null
-  idUsuario.value = item.idUsuario ?? ''
+function editar(usuario: UsuarioSummary) {
+  editandoId.value = usuario.idUsuario
+  form.nome = usuario.nome
+  form.email = usuario.email
+  form.telefone = usuario.telefone
+  form.idPerfil = usuario.idPerfil
   mensagem.value = ''
   erro.value = ''
 }
@@ -272,8 +294,9 @@ function editar(item: Diretoria) {
 function limparForm() {
   editandoId.value = null
   form.nome = ''
-  form.idUsuario = null
-  idUsuario.value = ''
+  form.email = ''
+  form.telefone = ''
+  form.idPerfil = 0
 }
 
 async function salvar() {
@@ -281,24 +304,19 @@ async function salvar() {
   erro.value = ''
   mensagem.value = ''
 
-  const body = {
-    nome: form.nome,
-    idUsuario: idUsuario.value === '' ? null : Number(idUsuario.value)
-  }
-
   try {
     if (editandoId.value) {
-      await $api<Diretoria>(`/diretoria/${editandoId.value}`, {
+      await $api<UsuarioSummary>(`/usuarios/${editandoId.value}`, {
         method: 'PUT',
-        body
+        body: { ...form }
       })
-      mensagem.value = 'Integrante atualizado.'
+      mensagem.value = 'Usuario atualizado.'
     } else {
-      await $api<Diretoria>('/diretoria', {
+      await $api<UsuarioSummary>('/usuarios', {
         method: 'POST',
-        body
+        body: { ...form }
       })
-      mensagem.value = 'Integrante cadastrado.'
+      mensagem.value = 'Usuario cadastrado.'
     }
 
     limparForm()
@@ -310,16 +328,16 @@ async function salvar() {
   }
 }
 
-async function excluir(item: Diretoria) {
-  if (!confirm(`Excluir ${item.nome} da diretoria?`)) {
+async function excluir(usuario: UsuarioSummary) {
+  if (!confirm(`Excluir o usuario ${usuario.nome}?`)) {
     return
   }
 
   erroLista.value = ''
 
   try {
-    await $api(`/diretoria/${item.id}`, { method: 'DELETE' })
-    if (editandoId.value === item.id) limparForm()
+    await $api(`/usuarios/${usuario.idUsuario}`, { method: 'DELETE' })
+    if (editandoId.value === usuario.idUsuario) limparForm()
     await carregar()
   } catch (err) {
     erroLista.value = normalizeApiError(err)

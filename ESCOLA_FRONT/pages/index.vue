@@ -19,23 +19,19 @@
     <div class="action-grid">
       <NuxtLink class="action-link" to="/diretoria">
         <span>Diretoria</span>
-        <strong>Consultar diretoria</strong>
-      </NuxtLink>
-      <NuxtLink v-if="auth.canWrite" class="action-link" to="/diretoria/novo">
-        <span>Cadastro</span>
-        <strong>Nova diretoria</strong>
-      </NuxtLink>
-      <NuxtLink v-if="auth.isAdmin" class="action-link" to="/usuarios/novo">
-        <span>Cadastro</span>
-        <strong>Novo usuario</strong>
+        <strong>Gerenciar diretoria</strong>
       </NuxtLink>
       <NuxtLink class="action-link" to="/professores">
-        <span>Consulta</span>
-        <strong>Professores</strong>
+        <span>Professores</span>
+        <strong>Gerenciar professores</strong>
       </NuxtLink>
       <NuxtLink class="action-link" to="/alunos">
-        <span>Consulta</span>
-        <strong>Alunos</strong>
+        <span>Alunos</span>
+        <strong>Gerenciar alunos</strong>
+      </NuxtLink>
+      <NuxtLink v-if="auth.isAdmin" class="action-link" to="/usuarios">
+        <span>Usuarios</span>
+        <strong>Gerenciar usuarios</strong>
       </NuxtLink>
     </div>
   </section>

@@ -14,6 +14,8 @@ export interface UsuarioCreate {
   idPerfil: number
 }
 
+export type UsuarioUpdate = UsuarioCreate
+
 export interface Perfil {
   idPerfil: number
   descricaoPerfil: string
@@ -49,18 +51,29 @@ export interface DiretoriaCreate {
   idUsuario?: number | null
 }
 
+export type DiretoriaUpdate = DiretoriaCreate
+
 export interface Professor {
   id: number
   nome: string
   idUsuario?: number | null
+  usuario?: UsuarioSummary | null
   alunos?: AlunoSummary[]
 }
+
+export interface ProfessorCreate {
+  nome: string
+  idUsuario?: number | null
+}
+
+export type ProfessorUpdate = ProfessorCreate
 
 export interface AlunoSummary {
   id: number
   nome: string
   sobrenome: string
   professorId: number
+  idUsuario?: number | null
 }
 
 export interface Aluno {
@@ -72,5 +85,18 @@ export interface Aluno {
   professor?: {
     id: number
     nome: string
+    idUsuario?: number | null
   } | null
+  idUsuario?: number | null
+  usuario?: UsuarioSummary | null
 }
+
+export interface AlunoCreate {
+  nome: string
+  sobrenome: string
+  dataNasc: string
+  professorId: number
+  idUsuario?: number | null
+}
+
+export type AlunoUpdate = AlunoCreate

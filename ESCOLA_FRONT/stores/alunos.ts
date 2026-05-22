@@ -1,22 +1,22 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
-import type { Diretoria, DiretoriaCreate, DiretoriaUpdate } from '~/types/api'
+import type { Aluno, AlunoCreate, AlunoUpdate } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
 
-export const useDiretoriaStore = defineStore('diretoria', () => {
-  const diretorias = ref<Diretoria[]>([])
+export const useAlunosStore = defineStore('alunos', () => {
+  const alunos = ref<Aluno[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  async function fetchDiretorias() {
+  async function fetchAlunos() {
     loading.value = true
     error.value = null
 
     try {
       const { $api } = useNuxtApp()
-      diretorias.value = await $api<Diretoria[]>('/diretoria')
-      return diretorias.value
+      alunos.value = await $api<Aluno[]>('/aluno')
+      return alunos.value
     } catch (err) {
       error.value = normalizeApiError(err)
       throw err
@@ -25,18 +25,18 @@ export const useDiretoriaStore = defineStore('diretoria', () => {
     }
   }
 
-  async function createDiretoria(payload: DiretoriaCreate) {
+  async function createAluno(payload: AlunoCreate) {
     loading.value = true
     error.value = null
 
     try {
       const { $api } = useNuxtApp()
-      const created = await $api<Diretoria>('/diretoria', {
+      const created = await $api<Aluno>('/aluno', {
         method: 'POST',
         body: payload
       })
 
-      diretorias.value = [created, ...diretorias.value]
+      alunos.value = [created, ...alunos.value]
       return created
     } catch (err) {
       error.value = normalizeApiError(err)
@@ -46,18 +46,18 @@ export const useDiretoriaStore = defineStore('diretoria', () => {
     }
   }
 
-  async function updateDiretoria(id: number, payload: DiretoriaUpdate) {
+  async function updateAluno(id: number, payload: AlunoUpdate) {
     loading.value = true
     error.value = null
 
     try {
       const { $api } = useNuxtApp()
-      const updated = await $api<Diretoria>(`/diretoria/${id}`, {
+      const updated = await $api<Aluno>(`/aluno/${id}`, {
         method: 'PUT',
         body: payload
       })
 
-      diretorias.value = diretorias.value.map((item) => item.id === id ? updated : item)
+      alunos.value = alunos.value.map((aluno) => aluno.id === id ? updated : aluno)
       return updated
     } catch (err) {
       error.value = normalizeApiError(err)
@@ -67,17 +67,17 @@ export const useDiretoriaStore = defineStore('diretoria', () => {
     }
   }
 
-  async function deleteDiretoria(id: number) {
+  async function deleteAluno(id: number) {
     loading.value = true
     error.value = null
 
     try {
       const { $api } = useNuxtApp()
-      await $api<void>(`/diretoria/${id}`, {
+      await $api<void>(`/aluno/${id}`, {
         method: 'DELETE'
       })
 
-      diretorias.value = diretorias.value.filter((item) => item.id !== id)
+      alunos.value = alunos.value.filter((aluno) => aluno.id !== id)
     } catch (err) {
       error.value = normalizeApiError(err)
       throw err
@@ -87,12 +87,12 @@ export const useDiretoriaStore = defineStore('diretoria', () => {
   }
 
   return {
-    diretorias,
+    alunos,
     loading,
     error,
-    fetchDiretorias,
-    createDiretoria,
-    updateDiretoria,
-    deleteDiretoria
+    fetchAlunos,
+    createAluno,
+    updateAluno,
+    deleteAluno
   }
 })

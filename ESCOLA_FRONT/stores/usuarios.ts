@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
-import type { Perfil, UsuarioCreate, UsuarioSummary } from '~/types/api'
+import type { Perfil, UsuarioCreate, UsuarioSummary, UsuarioUpdate } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
 
 export const useUsuariosStore = defineStore('usuarios', () => {
@@ -53,6 +53,48 @@ export const useUsuariosStore = defineStore('usuarios', () => {
     }
   }
 
+  async function updateUsuario(idUsuario: number, payload: UsuarioUpdate) {
+    loading.value = true
+    error.value = null
+
+    try {
+      const { $api } = useNuxtApp()
+      const updated = await $api<UsuarioSummary>(`/usuarios/${idUsuario}`, {
+        method: 'PUT',
+        body: payload
+      })
+
+      usuarios.value = usuarios.value.map((usuario) =>
+        usuario.idUsuario === idUsuario ? updated : usuario
+      )
+      return updated
+    } catch (err) {
+      error.value = normalizeApiError(err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function deleteUsuario(idUsuario: number) {
+    loading.value = true
+    error.value = null
+
+    try {
+      const { $api } = useNuxtApp()
+      await $api<void>(`/usuarios/${idUsuario}`, {
+        method: 'DELETE'
+      })
+
+      usuarios.value = usuarios.value.filter((usuario) => usuario.idUsuario !== idUsuario)
+    } catch (err) {
+      error.value = normalizeApiError(err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     usuarios,
     perfis,
@@ -60,6 +102,8 @@ export const useUsuariosStore = defineStore('usuarios', () => {
     error,
     fetchUsuarios,
     fetchPerfis,
-    createUsuario
+    createUsuario,
+    updateUsuario,
+    deleteUsuario
   }
 })

@@ -1,8 +1,8 @@
 <template>
   <section class="grid gap-6">
     <div>
-      <p class="eyebrow">Diretoria</p>
-      <h1 class="m-0 text-3xl font-extrabold text-slate-900">Novo integrante</h1>
+      <p class="eyebrow">Alunos</p>
+      <h1 class="m-0 text-3xl font-extrabold text-slate-900">Novo aluno</h1>
     </div>
 
     <form class="grid gap-5 rounded-lg border border-slate-200 bg-white p-5" @submit.prevent="salvar">
@@ -10,6 +10,26 @@
         <label>
           <span>Nome</span>
           <input v-model.trim="form.nome" type="text" required maxlength="100" />
+        </label>
+
+        <label>
+          <span>Sobrenome</span>
+          <input v-model.trim="form.sobrenome" type="text" required maxlength="100" />
+        </label>
+
+        <label>
+          <span>Data de nascimento</span>
+          <input v-model.trim="form.dataNasc" type="text" required placeholder="dd/MM/aaaa" maxlength="10" />
+        </label>
+
+        <label>
+          <span>Professor</span>
+          <select v-model.number="form.professorId" required>
+            <option disabled :value="0">Selecione</option>
+            <option v-for="professor in professores" :key="professor.id" :value="professor.id">
+              {{ professor.nome }}
+            </option>
+          </select>
         </label>
 
         <label>
@@ -26,11 +46,11 @@
       <p v-if="erro" class="alert alert-error">{{ erro }}</p>
 
       <div class="flex flex-wrap justify-end gap-2">
-        <NuxtLink class="rounded-md border border-slate-200 px-4 py-2 text-sm font-bold no-underline hover:bg-slate-100" to="/diretoria">
+        <NuxtLink class="rounded-md border border-slate-200 px-4 py-2 text-sm font-bold no-underline hover:bg-slate-100" to="/alunos">
           Cancelar
         </NuxtLink>
         <button class="rounded-md bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700" type="submit" :disabled="salvando">
-          {{ salvando ? 'Salvando...' : 'Salvar integrante' }}
+          {{ salvando ? 'Salvando...' : 'Salvar aluno' }}
         </button>
       </div>
     </form>
@@ -38,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Diretoria, DiretoriaCreate, UsuarioSummary } from '~/types/api'
+import type { Aluno, AlunoCreate, Professor, UsuarioSummary } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
 
 definePageMeta({
@@ -46,18 +66,27 @@ definePageMeta({
 })
 
 const { $api } = useNuxtApp()
+const professores = ref<Professor[]>([])
 const usuarios = ref<UsuarioSummary[]>([])
 const salvando = ref(false)
 const erro = ref('')
 const idUsuario = ref<number | ''>('')
-const form = reactive<DiretoriaCreate>({
+const form = reactive<AlunoCreate>({
   nome: '',
+  sobrenome: '',
+  dataNasc: '',
+  professorId: 0,
   idUsuario: null
 })
 
 onMounted(async () => {
   try {
-    usuarios.value = await $api<UsuarioSummary[]>('/usuarios')
+    const [professoresResponse, usuariosResponse] = await Promise.all([
+      $api<Professor[]>('/professor'),
+      $api<UsuarioSummary[]>('/usuarios')
+    ])
+    professores.value = professoresResponse
+    usuarios.value = usuariosResponse
   } catch (err) {
     erro.value = normalizeApiError(err)
   }
@@ -68,14 +97,14 @@ async function salvar() {
   erro.value = ''
 
   try {
-    const created = await $api<Diretoria>('/diretoria', {
+    const created = await $api<Aluno>('/aluno', {
       method: 'POST',
       body: {
-        nome: form.nome,
+        ...form,
         idUsuario: idUsuario.value === '' ? null : Number(idUsuario.value)
       }
     })
-    await navigateTo(`/diretoria/${created.id}`)
+    await navigateTo(`/alunos/${created.id}`)
   } catch (err) {
     erro.value = normalizeApiError(err)
   } finally {

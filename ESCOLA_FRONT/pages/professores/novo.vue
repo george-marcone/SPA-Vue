@@ -1,8 +1,8 @@
 <template>
   <section class="grid gap-6">
     <div>
-      <p class="eyebrow">Diretoria</p>
-      <h1 class="m-0 text-3xl font-extrabold text-slate-900">Novo integrante</h1>
+      <p class="eyebrow">Professores</p>
+      <h1 class="m-0 text-3xl font-extrabold text-slate-900">Novo professor</h1>
     </div>
 
     <form class="grid gap-5 rounded-lg border border-slate-200 bg-white p-5" @submit.prevent="salvar">
@@ -26,11 +26,11 @@
       <p v-if="erro" class="alert alert-error">{{ erro }}</p>
 
       <div class="flex flex-wrap justify-end gap-2">
-        <NuxtLink class="rounded-md border border-slate-200 px-4 py-2 text-sm font-bold no-underline hover:bg-slate-100" to="/diretoria">
+        <NuxtLink class="rounded-md border border-slate-200 px-4 py-2 text-sm font-bold no-underline hover:bg-slate-100" to="/professores">
           Cancelar
         </NuxtLink>
         <button class="rounded-md bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700" type="submit" :disabled="salvando">
-          {{ salvando ? 'Salvando...' : 'Salvar integrante' }}
+          {{ salvando ? 'Salvando...' : 'Salvar professor' }}
         </button>
       </div>
     </form>
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Diretoria, DiretoriaCreate, UsuarioSummary } from '~/types/api'
+import type { Professor, ProfessorCreate, UsuarioSummary } from '~/types/api'
 import { normalizeApiError } from '~/utils/api-client'
 
 definePageMeta({
@@ -50,7 +50,7 @@ const usuarios = ref<UsuarioSummary[]>([])
 const salvando = ref(false)
 const erro = ref('')
 const idUsuario = ref<number | ''>('')
-const form = reactive<DiretoriaCreate>({
+const form = reactive<ProfessorCreate>({
   nome: '',
   idUsuario: null
 })
@@ -68,14 +68,14 @@ async function salvar() {
   erro.value = ''
 
   try {
-    const created = await $api<Diretoria>('/diretoria', {
+    const created = await $api<Professor>('/professor', {
       method: 'POST',
       body: {
         nome: form.nome,
         idUsuario: idUsuario.value === '' ? null : Number(idUsuario.value)
       }
     })
-    await navigateTo(`/diretoria/${created.id}`)
+    await navigateTo(`/professores/${created.id}`)
   } catch (err) {
     erro.value = normalizeApiError(err)
   } finally {
