@@ -10,6 +10,7 @@ namespace form_API.Controllers
     /// <summary>
     /// Operacoes para consulta e manutencao de alunos.
     /// </summary>
+    [NonController]
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -98,7 +99,7 @@ namespace form_API.Controllers
         /// <param name="model">Dados do aluno.</param>
         /// <returns>Aluno criado.</returns>
         [HttpPost]
-        [Authorize(Roles = "Administrador,Contribuinte")]
+        [Authorize(Roles = "Administrador,Professor")]
         [ProducesResponseType(typeof(AlunoViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -123,7 +124,7 @@ namespace form_API.Controllers
         /// <param name="model">Dados atualizados do aluno.</param>
         /// <returns>Aluno atualizado.</returns>
         [HttpPut("{AlunoId}")]
-        [Authorize(Roles = "Administrador,Contribuinte")]
+        [Authorize(Roles = "Administrador,Professor")]
         [ProducesResponseType(typeof(AlunoViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

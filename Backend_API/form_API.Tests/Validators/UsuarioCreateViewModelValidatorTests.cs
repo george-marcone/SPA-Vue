@@ -7,6 +7,7 @@ namespace form_API.Tests.Validators
     public class UsuarioCreateViewModelValidatorTests
     {
         private readonly UsuarioCreateViewModelValidator _validator = new();
+        private readonly UsuarioUpdateViewModelValidator _updateValidator = new();
 
         [Fact]
         public void Validate_WhenModelIsValid_ShouldNotHaveValidationErrors()
@@ -51,6 +52,18 @@ namespace form_API.Tests.Validators
             var result = _validator.TestValidate(model);
 
             result.ShouldHaveValidationErrorFor(usuario => usuario.Email);
+        }
+
+        [Fact]
+        public void ValidateUpdate_WhenRequiredFieldsAreMissing_ShouldHaveValidationErrors()
+        {
+            var model = new UsuarioUpdateViewModel();
+
+            var result = _updateValidator.TestValidate(model);
+
+            result.ShouldHaveValidationErrorFor(usuario => usuario.Nome);
+            result.ShouldHaveValidationErrorFor(usuario => usuario.Email);
+            result.ShouldHaveValidationErrorFor(usuario => usuario.Telefone);
         }
     }
 }

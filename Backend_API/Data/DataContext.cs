@@ -95,9 +95,9 @@ namespace form_API.Data
         {
             return new[]
             {
-                new Perfil { IdPerfil = 1, DescricaoPerfil = "Administrador" },
-                new Perfil { IdPerfil = 2, DescricaoPerfil = "Contribuinte" },
-                new Perfil { IdPerfil = 3, DescricaoPerfil = "Leitor" }
+                new Perfil { IdPerfil = PerfisSistema.AdministradorId, DescricaoPerfil = PerfisSistema.Administrador },
+                new Perfil { IdPerfil = PerfisSistema.ProfessorId, DescricaoPerfil = PerfisSistema.Professor },
+                new Perfil { IdPerfil = PerfisSistema.AlunoId, DescricaoPerfil = PerfisSistema.Aluno }
             };
         }
 
@@ -112,7 +112,7 @@ namespace form_API.Data
                     Email = "admin@escola.com",
                     Telefone = "11999990001",
                     Senha = CreateSeedPassword(1),
-                    IdPerfil = 1
+                    IdPerfil = PerfisSistema.AdministradorId
                 }
             };
 
@@ -129,7 +129,7 @@ namespace form_API.Data
                 Email = $"professor{index + 1:00}@escola.com",
                 Telefone = $"1198888{index + 1:0000}",
                 Senha = CreateSeedPassword(index + 2),
-                IdPerfil = 2
+                IdPerfil = PerfisSistema.ProfessorId
             }));
 
             var alunos = new[]
@@ -145,7 +145,7 @@ namespace form_API.Data
                 Email = $"aluno{index + 1:00}@escola.com",
                 Telefone = $"1197777{index + 1:0000}",
                 Senha = CreateSeedPassword(index + 12),
-                IdPerfil = 3
+                IdPerfil = PerfisSistema.AlunoId
             }));
 
             return usuarios;

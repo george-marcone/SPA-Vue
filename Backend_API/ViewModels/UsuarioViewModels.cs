@@ -27,6 +27,32 @@ namespace form_API.ViewModels
     }
 
     /// <summary>
+    /// Dados para atualizacao de usuario.
+    /// </summary>
+    public class UsuarioUpdateViewModel
+    {
+        /// <summary>
+        /// Nome do usuario.
+        /// </summary>
+        public string Nome { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Email usado para login.
+        /// </summary>
+        public string Email { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Telefone de contato.
+        /// </summary>
+        public string Telefone { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Perfil de autorizacao vinculado ao usuario. Apenas administradores podem altera-lo.
+        /// </summary>
+        public int? IdPerfil { get; set; }
+    }
+
+    /// <summary>
     /// Dados publicos de um usuario, sem expor a senha.
     /// </summary>
     public class UsuarioSummaryViewModel

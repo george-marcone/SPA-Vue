@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using form_API.Security;
 using form_API.Services;
 using form_API.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace form_API.Controllers
 {
     /// <summary>
-    /// Operacoes para consulta e cadastro de usuarios.
+    /// Operacoes para consulta, cadastro e manutencao de usuarios.
     /// </summary>
     [Authorize]
     [Route("api/usuarios")]
@@ -26,7 +28,7 @@ namespace form_API.Controllers
         /// <summary>
         /// Lista usuarios cadastrados para vinculos com outras tabelas.
         /// </summary>
-        [Authorize(Roles = "Administrador,Contribuinte")]
+        [Authorize(Roles = PerfisSistema.Administrador + "," + PerfisSistema.Professor)]
         [HttpGet]
         [ProducesResponseType(typeof(UsuarioSummaryViewModel[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -47,7 +49,7 @@ namespace form_API.Controllers
         /// <summary>
         /// Busca um usuario pelo identificador.
         /// </summary>
-        [Authorize(Roles = "Administrador,Contribuinte")]
+        [Authorize(Roles = PerfisSistema.Administrador + "," + PerfisSistema.Professor + "," + PerfisSistema.Aluno)]
         [HttpGet("{usuarioId}")]
         [ProducesResponseType(typeof(UsuarioSummaryViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -58,6 +60,7 @@ namespace form_API.Controllers
             {
                 var usuario = await _usuarioService.GetByIdAsync(usuarioId);
                 if (usuario == null) return NotFound();
+                if (!PodeConsultarUsuario(usuario)) return Forbid();
                 return Ok(usuario);
             }
             catch (Exception ex)
@@ -70,7 +73,7 @@ namespace form_API.Controllers
         /// <summary>
         /// Lista perfis disponiveis para cadastro de usuario.
         /// </summary>
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = PerfisSistema.Administrador + "," + PerfisSistema.Professor)]
         [HttpGet("perfis")]
         [ProducesResponseType(typeof(PerfilViewModel[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -78,7 +81,7 @@ namespace form_API.Controllers
         {
             try
             {
-                var perfis = await _usuarioService.GetPerfisAsync();
+                var perfis = await _usuarioService.GetPerfisAsync(User);
                 return Ok(perfis);
             }
             catch (Exception ex)
@@ -91,7 +94,7 @@ namespace form_API.Controllers
         /// <summary>
         /// Cadastra um novo usuario.
         /// </summary>
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = PerfisSistema.Administrador + "," + PerfisSistema.Professor)]
         [HttpPost]
         [ProducesResponseType(typeof(UsuarioSummaryViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -100,8 +103,12 @@ namespace form_API.Controllers
         {
             try
             {
-                var created = await _usuarioService.AddAsync(model);
+                var created = await _usuarioService.AddAsync(model, User);
                 return CreatedAtAction(nameof(GetByUsuarioId), new { usuarioId = created.IdUsuario }, created);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
             }
             catch (InvalidOperationException ex)
             {
@@ -117,19 +124,23 @@ namespace form_API.Controllers
         /// <summary>
         /// Atualiza um usuario existente.
         /// </summary>
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = PerfisSistema.Administrador + "," + PerfisSistema.Professor + "," + PerfisSistema.Aluno)]
         [HttpPut("{usuarioId}")]
         [ProducesResponseType(typeof(UsuarioSummaryViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Put(int usuarioId, UsuarioCreateViewModel model)
+        public async Task<IActionResult> Put(int usuarioId, UsuarioUpdateViewModel model)
         {
             try
             {
-                var updated = await _usuarioService.UpdateAsync(usuarioId, model);
+                var updated = await _usuarioService.UpdateAsync(usuarioId, model, User);
                 if (updated == null) return NotFound();
                 return CreatedAtAction(nameof(GetByUsuarioId), new { usuarioId = updated.IdUsuario }, updated);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
             }
             catch (InvalidOperationException ex)
             {
@@ -145,7 +156,7 @@ namespace form_API.Controllers
         /// <summary>
         /// Exclui um usuario.
         /// </summary>
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = PerfisSistema.Administrador)]
         [HttpDelete("{usuarioId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -163,6 +174,22 @@ namespace form_API.Controllers
                 _logger.LogError(ex, "Erro ao excluir usuario {UsuarioId}", usuarioId);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
+        }
+
+        private bool PodeConsultarUsuario(UsuarioSummaryViewModel usuario)
+        {
+            if (User.IsInRole(PerfisSistema.Administrador) || User.IsInRole(PerfisSistema.Professor))
+            {
+                return true;
+            }
+
+            return GetUsuarioAtualId() == usuario.IdUsuario;
+        }
+
+        private int? GetUsuarioAtualId()
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.TryParse(idClaim, out var idUsuario) ? idUsuario : null;
         }
     }
 }

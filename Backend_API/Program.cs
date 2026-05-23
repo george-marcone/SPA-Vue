@@ -5,6 +5,8 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using form_API.Data;
 using form_API.Logging;
+using form_API.Models;
+using form_API.Security;
 using form_API.Services;
 using form_API.Swagger;
 using form_API.Validators;
@@ -58,9 +60,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Administrador", policy => policy.RequireRole("Administrador"));
-    options.AddPolicy("Contribuinte", policy => policy.RequireRole("Administrador", "Contribuinte"));
-    options.AddPolicy("Leitor", policy => policy.RequireRole("Administrador", "Contribuinte", "Leitor"));
+    options.AddPolicy(PerfisSistema.Administrador, policy => policy.RequireRole(PerfisSistema.Administrador));
+    options.AddPolicy(PerfisSistema.Professor, policy => policy.RequireRole(PerfisSistema.Administrador, PerfisSistema.Professor));
+    options.AddPolicy(PerfisSistema.Aluno, policy => policy.RequireRole(PerfisSistema.Administrador, PerfisSistema.Professor, PerfisSistema.Aluno));
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -70,7 +72,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Form API",
         Version = "v1",
-        Description = "API para gerenciamento escolar com alunos, professores, diretoria e autenticacao JWT."
+        Description = "API para gerenciamento escolar com CRUD unico de usuarios e autenticacao JWT."
     });
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -137,6 +139,8 @@ using (var scope = app.Services.CreateScope())
         {
             db.Database.Migrate();
         }
+
+        await SyncPerfisSistemaAsync(db, migrationLogger);
 
         migrationLogger.LogInformation("Banco de dados pronto.");
     }
@@ -236,4 +240,46 @@ static string ValidateJwtKey(string jwtKey)
     }
 
     return jwtKey;
+}
+
+static async Task SyncPerfisSistemaAsync(DataContext db, ILogger logger)
+{
+    var perfis = new[]
+    {
+        (PerfisSistema.AdministradorId, PerfisSistema.Administrador),
+        (PerfisSistema.ProfessorId, PerfisSistema.Professor),
+        (PerfisSistema.AlunoId, PerfisSistema.Aluno)
+    };
+
+    var alterouPerfis = false;
+
+    foreach (var (idPerfil, descricaoPerfil) in perfis)
+    {
+        var perfil = await db.Perfis.FirstOrDefaultAsync(p => p.IdPerfil == idPerfil);
+
+        if (perfil == null)
+        {
+            db.Perfis.Add(new Perfil
+            {
+                IdPerfil = idPerfil,
+                DescricaoPerfil = descricaoPerfil
+            });
+            alterouPerfis = true;
+            continue;
+        }
+
+        if (perfil.DescricaoPerfil != descricaoPerfil)
+        {
+            perfil.DescricaoPerfil = descricaoPerfil;
+            alterouPerfis = true;
+        }
+    }
+
+    if (!alterouPerfis)
+    {
+        return;
+    }
+
+    await db.SaveChangesAsync();
+    logger.LogInformation("Perfis de usuario sincronizados.");
 }

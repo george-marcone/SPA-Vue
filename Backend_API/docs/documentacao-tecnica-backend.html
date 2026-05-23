@@ -483,9 +483,9 @@
   <h3>10.2 Controllers</h3>
   <table>
     <tr><th>Classe</th><th>Funcao</th><th>Principais acoes</th></tr>
-    <tr><td><code>AlunoController</code></td><td>Endpoint HTTP de alunos.</td><td>Listar, buscar por id, buscar por professor, criar, atualizar e excluir aluno.</td></tr>
-    <tr><td><code>ProfessorController</code></td><td>Endpoint HTTP de professores.</td><td>Listar, buscar por id, criar, atualizar e excluir professor.</td></tr>
-    <tr><td><code>DiretoriaController</code></td><td>Endpoint HTTP da diretoria escolar.</td><td>Listar, buscar por id, criar, atualizar e excluir integrante da diretoria.</td></tr>
+    <tr><td><code>AlunoController</code></td><td>Legado nao exposto como controller MVC.</td><td>CRUD substituido pelo CRUD unico de usuarios.</td></tr>
+    <tr><td><code>ProfessorController</code></td><td>Legado nao exposto como controller MVC.</td><td>CRUD substituido pelo CRUD unico de usuarios.</td></tr>
+    <tr><td><code>DiretoriaController</code></td><td>Legado nao exposto como controller MVC.</td><td>CRUD substituido pelo CRUD unico de usuarios.</td></tr>
     <tr><td><code>UsuariosController</code></td><td>Endpoint HTTP de usuarios e perfis.</td><td>Listar usuarios, buscar por id, listar perfis, criar, atualizar e excluir usuario.</td></tr>
     <tr><td><code>AuthController</code></td><td>Endpoint HTTP de autenticacao.</td><td>Login, usuario atual, validacao simples de token, validacao admin e alteracao de senha.</td></tr>
   </table>
@@ -520,7 +520,7 @@
     <tr><td><code>Professor</code></td><td>Entidade persistida de professor.</td><td>Nome, IdUsuario, lista de Alunos.</td></tr>
     <tr><td><code>Diretoria</code></td><td>Entidade persistida de pessoa da administracao escolar.</td><td>Nome e IdUsuario opcional.</td></tr>
     <tr><td><code>Usuario</code></td><td>Entidade autenticavel.</td><td>Nome, Email, Telefone, Senha hash e IdPerfil.</td></tr>
-    <tr><td><code>Perfil</code></td><td>Entidade de autorizacao.</td><td>Administrador, Contribuinte e Leitor.</td></tr>
+    <tr><td><code>Perfil</code></td><td>Entidade de autorizacao.</td><td>Administrador, Professor e Aluno.</td></tr>
   </table>
 
   <h3>10.6 ViewModels e Mapeamentos</h3>
@@ -534,7 +534,8 @@
     <tr><td><code>ProfessorSummaryViewModel</code></td><td>Resumo de professor usado em aluno.</td></tr>
     <tr><td><code>DiretoriaCreateEditViewModel</code></td><td>Payload de criacao/edicao da diretoria.</td></tr>
     <tr><td><code>DiretoriaViewModel</code></td><td>Resposta da diretoria com usuario vinculado.</td></tr>
-    <tr><td><code>UsuarioCreateViewModel</code></td><td>Payload de criacao/edicao de usuario sem expor senha.</td></tr>
+    <tr><td><code>UsuarioCreateViewModel</code></td><td>Payload de criacao de usuario sem expor senha.</td></tr>
+    <tr><td><code>UsuarioUpdateViewModel</code></td><td>Payload de edicao de usuario sem expor senha.</td></tr>
     <tr><td><code>UsuarioSummaryViewModel</code></td><td>Dados publicos de usuario sem senha.</td></tr>
     <tr><td><code>PerfilViewModel</code></td><td>Contrato de saida para perfis.</td></tr>
     <tr><td><code>LoginRequestViewModel</code></td><td>Payload de login.</td></tr>
@@ -570,10 +571,10 @@
   <ul>
     <li>Todo endpoint de negocio exige token JWT valido.</li>
     <li><span class="badge">Administrador</span> possui acesso completo: consulta, cadastro, edicao e exclusao.</li>
-    <li><span class="badge">Contribuinte</span> pode consultar, criar e atualizar alunos, professores e diretoria, mas nao pode excluir.</li>
-    <li><span class="badge">Leitor</span> pode consultar endpoints autenticados de leitura.</li>
-    <li>Somente administrador cria, atualiza e exclui usuarios.</li>
-    <li>Somente administrador lista perfis para cadastro de usuario.</li>
+    <li><span class="badge">Professor</span> pode cadastrar usuarios apenas com perfil Aluno e consultar usuarios.</li>
+    <li><span class="badge">Aluno</span> nao cadastra usuarios; pode corrigir apenas seus proprios dados de nome, email e telefone.</li>
+    <li>Somente administrador exclui usuarios e altera perfil de usuario existente.</li>
+    <li>Administrador lista todos os perfis; professor lista apenas o perfil Aluno para cadastro.</li>
     <li>Usuarios criados pela API recebem a senha inicial <code>Senha@252525</code>.</li>
     <li>Quando o login detecta uso da senha padrao, a resposta retorna <code>deveAlterarSenhaPadrao = true</code>.</li>
     <li>Senha nunca trafega em respostas e nunca e persistida em texto puro.</li>
@@ -592,11 +593,8 @@
     <tr><td>Auth</td><td>POST <code>/api/Auth/login</code></td><td>Publico</td><td>Autentica e retorna JWT.</td></tr>
     <tr><td>Auth</td><td>GET <code>/api/Auth/me</code></td><td>Autenticado</td><td>Retorna usuario atual.</td></tr>
     <tr><td>Auth</td><td>POST <code>/api/Auth/alterar-senha</code></td><td>Autenticado</td><td>Altera senha.</td></tr>
-    <tr><td>Aluno</td><td>GET/POST/PUT/DELETE <code>/api/Aluno</code></td><td>Leitura autenticada; escrita Admin/Contribuinte; delete Admin.</td><td>CRUD de alunos.</td></tr>
-    <tr><td>Professor</td><td>GET/POST/PUT/DELETE <code>/api/Professor</code></td><td>Leitura autenticada; escrita Admin/Contribuinte; delete Admin.</td><td>CRUD de professores.</td></tr>
-    <tr><td>Diretoria</td><td>GET/POST/PUT/DELETE <code>/api/Diretoria</code></td><td>Leitura autenticada; escrita Admin/Contribuinte; delete Admin.</td><td>CRUD de diretoria.</td></tr>
-    <tr><td>Usuarios</td><td>GET/POST/PUT/DELETE <code>/api/usuarios</code></td><td>Consulta Admin/Contribuinte; escrita Admin.</td><td>CRUD de usuarios.</td></tr>
-    <tr><td>Perfis</td><td>GET <code>/api/usuarios/perfis</code></td><td>Administrador</td><td>Lista perfis disponiveis.</td></tr>
+    <tr><td>Usuarios</td><td>GET/POST/PUT/DELETE <code>/api/usuarios</code></td><td>Admin completo; Professor cria apenas Aluno; Aluno edita seus dados basicos.</td><td>CRUD unico de usuarios.</td></tr>
+    <tr><td>Perfis</td><td>GET <code>/api/usuarios/perfis</code></td><td>Administrador/Professor</td><td>Lista perfis disponiveis conforme permissao.</td></tr>
   </table>
 
   <h2>13. Migrations e Banco</h2>

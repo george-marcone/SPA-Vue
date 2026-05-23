@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Security.Claims;
 using form_API.Controllers;
 using form_API.Services;
 using form_API.ViewModels;
@@ -28,11 +29,11 @@ namespace form_API.Tests.Controllers
                 Email = model.Email,
                 Telefone = model.Telefone,
                 IdPerfil = model.IdPerfil,
-                DescricaoPerfil = "Contribuinte"
+                DescricaoPerfil = "Professor"
             };
 
             var service = new Mock<IUsuarioService>();
-            service.Setup(s => s.AddAsync(model)).ReturnsAsync(expected);
+            service.Setup(s => s.AddAsync(model, It.IsAny<ClaimsPrincipal?>())).ReturnsAsync(expected);
 
             var logger = new Mock<ILogger<UsuariosController>>();
             var controller = new UsuariosController(service.Object, logger.Object);

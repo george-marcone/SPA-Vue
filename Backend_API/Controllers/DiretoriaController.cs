@@ -8,6 +8,7 @@ namespace form_API.Controllers
     /// <summary>
     /// Operacoes para consulta e manutencao da diretoria.
     /// </summary>
+    [NonController]
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -68,7 +69,7 @@ namespace form_API.Controllers
         /// <summary>
         /// Cria um novo integrante da diretoria.
         /// </summary>
-        [Authorize(Roles = "Administrador,Contribuinte")]
+        [Authorize(Roles = "Administrador,Professor")]
         [HttpPost]
         [ProducesResponseType(typeof(DiretoriaViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -90,7 +91,7 @@ namespace form_API.Controllers
         /// <summary>
         /// Atualiza um integrante da diretoria.
         /// </summary>
-        [Authorize(Roles = "Administrador,Contribuinte")]
+        [Authorize(Roles = "Administrador,Professor")]
         [HttpPut("{DiretoriaId}")]
         [ProducesResponseType(typeof(DiretoriaViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
